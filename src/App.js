@@ -1,24 +1,48 @@
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter as Router, Switch, Route, Link, Redirect } from 'react-router-dom';
+
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+
+import Main from './Main';
+import Profile from './Profile';
+import Register from './Register';
+import Login from './Login';
+import ForgotPass from './ForgotPass';
+import UpdateProfile from './UpdateProfile';
+import Preview from './Preview';
+
+
+function AuthRoute({ component: Component, ...rest }) {
+  const { currentUser } = useAuth();
+
+  return (
+    <Route
+      {...rest}
+      render={(props) =>
+        currentUser ? ( 
+          <Component {...props} />
+        ) : ( 
+          <Redirect to='/app/login' />
+        )
+      }
+    />
+  );
+}
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <AuthProvider>
+      <Switch>
+        <Route exact path='/' component={Main} />
+        <Route exact path='/:user_name' component={Profile} />
+        <Route exact path='/app/register' component={Register} />
+        <Route exact path='/app/login' component={Login} />
+        <Route exact path='/app/forgot' component={ForgotPass} />
+        <AuthRoute exact path='/app/update' component={UpdateProfile} />
+        <AuthRoute exact path='/app/preview' component={Preview} />
+        {/* <AuthRoute exact path='/edit/:user_name' component={} /> */}
+      </Switch>
+    </AuthProvider>
   );
 }
 
