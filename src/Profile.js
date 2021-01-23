@@ -149,9 +149,9 @@ export default function Profile() {
     // TODO: Check if user is signed in; if signed in, check if UID matches UID of doc, if does, show option to edit 
 
     return (
-        <div className='profile-container'>
+        <div className={`profile-container ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}>
             <div className='profile'>
-                <div className={`photos ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}>
+                <div className='photos'>
                     {(bgpURL) && (
                         <img className='bgp' src={bgpURL} alt="background" />
                     )}

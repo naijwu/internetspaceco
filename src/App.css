@@ -33,6 +33,7 @@ header {
   width:800px;
   margin:50px auto;
   justify-content:space-between;
+  align-items:flex-start;
   text-align:center;
 }
 
@@ -49,6 +50,13 @@ header {
   width:350px;
   border-radius:6px;
   margin:100px auto;
+  box-shadow:0 0 10px rgba(0,0,0,0.03);
+}
+
+.demo-container .profile-container {
+  margin-top:0;
+  margin-bottom:0;
+  height:auto;
 }
 
 .profile {
@@ -78,23 +86,32 @@ header {
   box-shadow:0 0 10px rgba(0,0,0,0.02);
 }
 
-.profile .photos.none {
+.profile-container.none,
+.profile-container.pf-alone {
+  box-shadow:none;
+}
+
+.profile-container.pf-alone .profile .info{
+  padding-top:0;
+}
+
+.profile-container.none .profile .photos {
   display:none;
 }
-.profile .photos.bg-alone {
+.profile-container.bg-alone .profile .photos {
   margin-bottom:15px;
 }
-.profile .photos.bg-alone .pfp {
+.profile-container.bg-alone .profile .photos .pfp {
   display:none;
 }
-.profile .photos.pf-alone {
+.profile-container.pf-alone .profile .photos {
   height:auto;
   margin-bottom:10px;
 }
-.profile .photos.pf-alone .bgp {
+.profile-container.pf-alone .profile .photos .bgp {
   display:none;
 }
-.profile .photos.pf-alone .pfp {
+.profile-container.pf-alone .profile .photos .pfp {
   margin-top:0;
 }
 

@@ -491,9 +491,9 @@ const Editor = (props) => {
 
     return (
                 <div className='demo-container'>
-                    <div className='demo'>
+                    <div className={`profile-container ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}>
                         <div className='profile'>
-                            <div className={`photos ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}>
+                            <div className='photos'>
                                 <img className='bgp' src={bgpURL} alt="background" />
                                 <img className='pfp' src={pfpURL} alt="profile" />
                             </div>
