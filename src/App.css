@@ -64,7 +64,7 @@ header {
   width:100%;
   height:100%;
   border-radius:4px 4px 0 0;
-  position:cover;
+  object-fit:cover !important;
 }
 
 .profile .photos .pfp {
@@ -72,7 +72,7 @@ header {
   height:var(--pfp-height);
   margin:calc(calc(var(--pfp-height) * -1) / 2) auto 0 auto;
 
-  position:cover;
+  object-fit:cover;
 
   border-radius:100%;
   box-shadow:0 0 10px rgba(0,0,0,0.02);
