@@ -14,6 +14,8 @@ export default function Preview() {
     const [needPreSetup, setNeedPreSetup] = useState(false);
 
     const [pages, setPages] = useState({});
+    const [pageData, setPageData] = useState({});
+    const [pageDataLoaded, setPageDataLoaded] = useState(false);
 
     const [usedCreate, setUsedCreate] = useState(false);
 
@@ -43,6 +45,17 @@ export default function Preview() {
                     // if there exists -- DASHBOARD
 
                     setNeedSetup(false);
+
+                    database.collection('pages').doc(`${docData.pages[0]}`).get().then((pageDoc) => {
+                        let page = pageDoc.data();
+
+                        setPageData(page);
+                        setPageDataLoaded(true);
+
+                    }).catch(function(err) {
+                        console.log("Error reading the user's document:", err);
+                    });
+
                 } else if (docData.pages[0] === undefined) {
                     // if there doesn't exist -- SETUP
                     
@@ -53,10 +66,11 @@ export default function Preview() {
                 console.log("Something went wrong");
             }
         }).catch(function(error) {
+            // TODO: Make the error appear 
             console.log("Error getting document:", error);
         });
 
-    }, [currentUser])
+    }, [currentUser]);
 
     function handleSetup(e) {
         e.preventDefault();
@@ -80,18 +94,42 @@ export default function Preview() {
             });
 
             if(!isDuplicate) {
-
-                database.collection("pages").doc(newPageName).set({
-                    title: 'new page',
-                    user_id: currentUser.uid,
+                
+                database.collection("users").doc(currentUser.uid).set({
+                    pages: [newPageName]
                 })
                 .then(function() {
-                    setMessage(`Document successfully written! Link: /${newPageName}`);
-                    setUsedCreate(true);
+
+                    let dataConstruct = {
+                        user_id: currentUser.uid,
+                        data: {
+                            biography: '',
+                            name: ''
+                        },
+                        images: {
+                            background: '',
+                            profile: ''
+                        },
+                        socials: [],
+                        websites: []
+                    };
+
+                    database.collection("pages").doc(newPageName).set(dataConstruct)
+                    .then(function() {
+                        setMessage(`Document successfully written! Link: /${newPageName}`);
+                        setUsedCreate(true);
+                        history.go(0);
+                    })
+                    .catch(function(error) {
+                        setError("Error writing document: " + error);
+                    });
+
+
+                }).catch(function(err) {
+                    setError("Error writing name of page under users collection: " + err);
                 })
-                .catch(function(error) {
-                    setError("Error writing document: ", error);
-                });
+
+
             } else {
                 setError('Error - Name already exists');
             }
@@ -111,62 +149,61 @@ export default function Preview() {
         }
     }
 
-    function handleSaveChanges() {
-
-    }
-
     return (
         <div className='preview'>
             {(needSetup) && (
                 // User need setup
-                <div className='setup'>
-                    <div className='account-bar'>
-                        Logged In as {currentUser.email}
+                <>
+                    <div className='setup'>
+                        <div className='account-bar'>
+                            Logged In as {currentUser.email}
+                        </div>
+                        {(message) && (
+                            <div className='gospel-alert'>
+                                {message}
+                            </div>
+                        )}
+                        {(error) && (
+                            <div className='error-alert'>
+                                {error}
+                            </div>
+                        )}
+                        <div className='setup-inner'>
+                            <h2>Welcome!</h2>
+                            <p>
+                                Set your URL. Make sure you like it-you can't change it after!
+                            </p>
+                            <div className='setup-input'>
+                                internetspace.co/<input value={newPageName} onChange={e=>setNewPageName(e.target.value)} type="text" />
+                            </div>
+                            <h3>Your URL will look like this:</h3>
+                            <div className='setup-input-demo'>
+                                internetspace.co/{newPageName.replace(/ /g, '-').replace(/#|@|\/|\.|\\|!|~|\||\+|\?/g, '')}
+                            </div>
+                            <input type="submit" disabled={usedCreate} value="Create Page" onClick={handleSetup} />
+                        </div>
                     </div>
-                    {(message) && (
-                        <div className='message-alert'>
-                            {message}
-                        </div>
-                    )}
-                    {(error) && (
-                        <div className='error-alert'>
-                            {error}
-                        </div>
-                    )}
-                    <div className='setup-inner'>
-                        <h2>Welcome!</h2>
-                        <p>
-                            Set your URL. Make sure you like it-you can't change it after!
-                        </p>
-                        <div className='setup-input'>
-                            internetspace.co/<input value={newPageName} onChange={e=>setNewPageName(e.target.value)} type="text" />
-                        </div>
-                        <h3>Your URL will look like this:</h3>
-                        <div className='setup-input-demo'>
-                            internetspace.co/{newPageName.replace(/ /g, '-').replace(/#|@|\/|\./g, '')}
-                        </div>
-                        <input type="submit" disabled={usedCreate} value="Create Page" onClick={handleSetup} />
-                    </div>
-                </div>
+                </>
             )}
 
             {(!needSetup && !needPreSetup) && (
                 <>
+                    <div className='editor'>
+                        <Editor
+                            loaded={pageDataLoaded}
+                            pageURL={pages.pages ? pages.pages[0] : ''}
+                            recentState={pageData} />
+                    </div>
                     <div className='main'>
                         <div className='account-bar'>
                             Logged In as {currentUser.email}
                         </div>
                         <div className='main-inner'>
                             <h3>Your page:</h3>
-                            <p>
+                            <a className='text-link' target="_blank" rel="noreferrer" href={`http://internetspace.co/${pages.pages}`}>
                                 internetspace.co/{pages.pages}
-                            </p>
+                            </a>
                         </div>
-                    </div>
-                    <div className='editor'>
-                        <Editor
-                            recentState={pages}
-                            saveChanges={handleSaveChanges} />
                     </div>
                 </>
             )}

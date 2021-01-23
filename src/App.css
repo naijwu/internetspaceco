@@ -47,10 +47,7 @@ header {
 .profile-container {
   text-align:center;
   width:350px;
-  height:600px;
   border-radius:6px;
-  overflow:hidden;
-  box-shadow: 1px 0 10px rgba(0,0,0,0.03);
   margin:100px auto;
 }
 
@@ -66,7 +63,7 @@ header {
 .profile .photos .bgp {
   width:100%;
   height:100%;
-  background:black;
+  border-radius:4px 4px 0 0;
 }
 
 .profile .photos .pfp {
@@ -77,6 +74,27 @@ header {
   position:cover;
 
   border-radius:100%;
+  box-shadow:0 0 10px rgba(0,0,0,0.02);
+}
+
+.profile .photos.none {
+  display:none;
+}
+.profile .photos.bg-alone {
+  margin-bottom:15px;
+}
+.profile .photos.bg-alone .pfp {
+  display:none;
+}
+.profile .photos.pf-alone {
+  height:auto;
+  margin-bottom:10px;
+}
+.profile .photos.pf-alone .bgp {
+  display:none;
+}
+.profile .photos.pf-alone .pfp {
+  margin-top:0;
 }
 
 .profile .info {
@@ -94,7 +112,7 @@ header {
   width:var(--socials-icon-size);
   border-radius:100%;
   background:white;
-  box-shadow:0 0 10px rgba(0,0,0,0.02);
+  box-shadow:0 0 10px rgba(0,0,0,0.05);
   display:flex;
   align-items:center;
   justify-content:center;
@@ -125,20 +143,17 @@ header {
 }
 
 .profile .links {
-  padding-top:10px;
+  padding:15px;
   display:flex;
   flex-direction:column;
   box-sizing: border-box;
-  padding-left:5px;
-  padding-right:5px;
 }
 
 .profile .links .link-item {
-  background:white;
   width:100%;
   display:flex;
   align-items:center;
-  margin-top: 5px;
+  margin-top: 15px;
   border-radius:4px;
   box-sizing: border-box;
   overflow:hidden;
@@ -147,6 +162,8 @@ header {
   min-height:var(--min-height);
   text-decoration:none;
   color:black;
+
+  box-shadow:0 0 10px rgba(0,0,0,0.03);
 }
 
 .profile .link-item .link-img {
@@ -156,15 +173,19 @@ header {
 }
 
 .profile .link-item .link-content {
-  padding:10px;
+  padding:15px;
   display:flex;
   flex-direction:column;
   align-items:flex-start;
 }
 
+.profile .link-item .link-content .link-text {
+  font-weight:bold;
+}
+
 .profile .link-item .link-content .link-url {
   color:#777;
-  font-size: 16px;
+  font-size: 15px;
 }
 
 .engage {
@@ -184,6 +205,11 @@ header {
   box-sizing: border-box;
   padding:25px;
   border-bottom:1px solid #eee;
+}
+
+.engage .input-section p {
+  padding-bottom:10px;
+  padding-top:5px;
 }
 
 .engage .input-section:last-child {
@@ -365,6 +391,14 @@ input[type="submit"]:hover {
   font-weight: bold;
 }
 
+.gospel-alert {
+  background:#5cff112f;
+  box-sizing: border-box;
+  padding:20px;
+  color:#65c041;
+  font-weight: bold;
+}
+
 
 /* Preview Page Styles - Actions (global) */
 
@@ -429,7 +463,7 @@ input[type="submit"]:hover {
 
 .preview h3 {
   padding-top:20px;
-  font-size:14px;
+  font-size:18px;
 }
 
 .setup .setup-input {
@@ -456,8 +490,8 @@ input[type="submit"]:hover {
 
 .main {
   width:350px;
-  margin:100px auto 30px auto;
   background:white;
+  margin:50px auto;
   border-radius:4px;
   box-shadow:0 0 10px rgba(0,0,0,0.02);
   overflow:hidden;
@@ -466,4 +500,23 @@ input[type="submit"]:hover {
 .main .main-inner {
   padding:0 20px 20px 20px;
   box-sizing: border-box;
+}
+
+.editor {
+  padding-top:75px;
+}
+
+/* EDITOR (its like basically the same as the intro) */
+
+.save-change {
+  box-sizing: border-box;
+  padding:20px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.save-change .save-change-reminder {
+  color:#777;
+  font-style:italic;
 }

@@ -29,9 +29,9 @@ export default function Profile() {
     const [websites, setWebsites] = useState([]); // {img: 'img url', name: 'link name', link: '',}
     const [socials, setSocials] = useState([]);
 
-    const [pfpURL, setPfpURL] = useState('https://thumbor.forbes.com/thumbor/fit-in/416x416/filters%3Aformat%28jpg%29/https%3A%2F%2Fspecials-images.forbesimg.com%2Fimageserve%2F5f47d4de7637290765bce495%2F0x0.jpg%3Fbackground%3D000000%26cropX1%3D1398%26cropX2%3D3908%26cropY1%3D594%26cropY2%3D3102');
-    const [bgpURL, setBgpURL] = useState('https://cimg3.ibsrv.net/ibimg/hgm/1024x576-1/100/669/2020-tesla-roadster-at-2018-grand-basel-show--image-via-bluewin_100669019.jpg');
-
+    // TODO: Add support for profile pictures (at EDITOR side)
+    const [pfpURL, setPfpURL] = useState('');
+    const [bgpURL, setBgpURL] = useState('');
 
     // print params to console
     console.log(params.user_name);
@@ -50,6 +50,9 @@ export default function Profile() {
 
                 setSocials(profileData.socials ? profileData.socials : []);
                 setWebsites(profileData.websites ? profileData.websites : []);
+
+                setPfpURL(profileData.images.profile ? profileData.images.profile : '');
+                setBgpURL(profileData.images.background ? profileData.images.background : '');
 
                 console.log(socials, websites)
             } else {
@@ -111,9 +114,9 @@ export default function Profile() {
 
             if (icon) {
                 returnData.push(
-                    <Link to={{pathname: `${item.link}`}}  className={`icon ${item.type}`}>
+                    <a target="_blank" rel="noreferrer" href={`${item.link}`} className={`icon ${item.type}`}>
                         <img src={icon} alt={item.type} />
-                    </Link>
+                    </a>
                 );
             }
         });
@@ -127,14 +130,14 @@ export default function Profile() {
         websites.forEach((item) => {
             if(item.name && item.link) {
                 returnData.push(
-                    <Link className='link-item' to={{pathname: `${item.link}`}}>
+                    <a target="_blank" rel="noreferrer" className='link-item' href={`${item.link}`}>
                         {/* <img className='link-image' src={} /> /* perhaps send opengraph req */}
-                        <div className='link-img'>{item.img}</div>
+                        {/* <div className='link-img'>{item.img}</div> */}
                         <div className='link-content'>
                             <div className='link-text'>{item.name}</div>
                             <div className='link-url'>{item.link}</div>
                         </div>
-                    </Link>
+                    </a>
                 );
             }
         })
@@ -142,12 +145,19 @@ export default function Profile() {
         return returnData;
     }
 
+
+    // TODO: Check if user is signed in; if signed in, check if UID matches UID of doc, if does, show option to edit 
+
     return (
         <div className='profile-container'>
             <div className='profile'>
-                <div className='photos'>
-                    <img className='bgp' src={bgpURL} alt="background" />
-                    <img className='pfp' src={pfpURL} alt="profile" />
+                <div className={`photos ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}>
+                    {(bgpURL) && (
+                        <img className='bgp' src={bgpURL} alt="background" />
+                    )}
+                    {(pfpURL) && (
+                        <img className='pfp' src={pfpURL} alt="profile" />
+                    )}
                 </div>
                 <div className='info'>
                     <h3>{name}</h3>

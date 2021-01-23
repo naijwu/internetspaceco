@@ -420,6 +420,9 @@ const Main = (props) => {
                         </div>
                         <div className='input-section'>
                             <h4>Socials</h4>
+                            <p>
+                                Make sure to write 'http://' in front of all links!
+                            </p>
                             <div className='input-box social'>
                                 {displaySocialOne && (
                                     <div className='add-social'>
