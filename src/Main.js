@@ -376,7 +376,7 @@ const Main = (props) => {
             <div className='about'>
                 <h2>It's fun to. Give it a try.</h2>
                 <div className='demo-container'>
-                    <div className='demo'>
+                    <div className={`profile-container ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}>
                         <div className='profile'>
                             <div className='photos'>
                                 <img className='bgp' src={bgpURL} alt="background" />
