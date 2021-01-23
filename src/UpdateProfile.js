@@ -35,7 +35,7 @@ export default function UpdateProfile() {
         Promise.all(promises).then(() => {
             history.push('/login');
         }).catch(() => {
-            setError('failed to update account. Try logging out and back in');
+            setError('Failed to update account. Try logging out and back in.');
         }).finally(() => {
             setLoading(false);
         })
@@ -43,26 +43,33 @@ export default function UpdateProfile() {
 
     return (
         <>
-            <div>
+            <div className='account-component'>
                 <h1>Update Profile</h1>
                 {error && (
                     <div className='error-alert'>
                         {error}
                     </div>
                 )}
-                email:
-                <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
-                <br/>
-                password:
-                <input type="text" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Leave blank to keep the same" />
-                <br/>
-                confirm password:
-                <input type="text" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} placeholder="Leave blank to keep the same" />
-                <br/>
-                <input disabled={loading} onClick={handleSubmit} type="submit" value="Update" />
-                <Link to='/app/preview'>
-                    Cancel
-                </Link>
+                <div className='input-group'>
+                    <h3>Email</h3>
+                    <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
+                </div>
+                <div className='input-group'>
+                    <h3>Password</h3>
+                    <input type="text" value={password} onChange={e=>setPassword(e.target.value)} placeholder="Leave blank to keep the same" />
+                </div>
+                <div className='input-group'>
+                    <h3>Confirm Password</h3>
+                    <input type="text" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} placeholder="Leave blank to keep the same" />
+                </div>
+                <div className='text-tray'>
+                    <Link className='text-link' to='/app/preview'>
+                        Cancel
+                    </Link>
+                </div>
+                <div className='input-group'>
+                    <input disabled={loading} onClick={handleSubmit} type="submit" value="Update" />
+                </div>
             </div>
         </>
     )

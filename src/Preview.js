@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
+import Editor from './Editor';
 import { database } from './firebase';
 
 export default function Preview() {
@@ -13,6 +14,8 @@ export default function Preview() {
     const [needPreSetup, setNeedPreSetup] = useState(false);
 
     const [pages, setPages] = useState({});
+
+    const [usedCreate, setUsedCreate] = useState(false);
 
     const [newPageName, setNewPageName] = useState('');
 
@@ -58,30 +61,42 @@ export default function Preview() {
     function handleSetup(e) {
         e.preventDefault();
 
-        let isDuplicate = false;
+        setError('');
+        setMessage('');
 
-        database.collection('users').doc(newPageName).get().then((doc) => {
-            if(doc.exist) {
-                isDuplicate = true;
-            } else {
-                isDuplicate = false;
-            }
-        });
+        let isDuplicate = false;
         
-        let allowedAction = (needSetup) && (!needPreSetup) && !isDuplicate;
+        let allowedAction = (needSetup) && (!needPreSetup) && newPageName;
         console.log("is duplicate: " + isDuplicate);
 
         if(allowedAction) {
-            database.collection("pages").doc(newPageName).set({
-                title: 'new page',
-                user_id: currentUser.uid,
-            })
-            .then(function() {
-                setMessage(`Document successfully written! Link: /${newPageName}`);
-            })
-            .catch(function(error) {
-                setMessage("Error writing document: ", error);
+
+            database.collection('users').doc(newPageName).get().then((doc) => {
+                if(doc.exist) {
+                    isDuplicate = true;
+                } else {
+                    isDuplicate = false;
+                }
             });
+
+            if(!isDuplicate) {
+
+                database.collection("pages").doc(newPageName).set({
+                    title: 'new page',
+                    user_id: currentUser.uid,
+                })
+                .then(function() {
+                    setMessage(`Document successfully written! Link: /${newPageName}`);
+                    setUsedCreate(true);
+                })
+                .catch(function(error) {
+                    setError("Error writing document: ", error);
+                });
+            } else {
+                setError('Error - Name already exists');
+            }
+        } else {
+            setError('Error creating - already have a page or need to fill in name!')
         }
     }
 
@@ -96,48 +111,77 @@ export default function Preview() {
         }
     }
 
-    return (
-        <>
-            {error && (
-                <div className='error-alert'>
-                    {error}
-                </div>
-            )}
-            Logged In as {currentUser.email}
+    function handleSaveChanges() {
 
+    }
+
+    return (
+        <div className='preview'>
             {(needSetup) && (
                 // User need setup
                 <div className='setup'>
-                    <h2>You're in setup</h2>
-                    Your url:<br/>
-                    internetspace.co/<input value={newPageName} onChange={e=>setNewPageName(e.target.value)} type="text" />
-                    <br/>
-                    <input type="submit" value="Create Page" onClick={handleSetup} />
+                    <div className='account-bar'>
+                        Logged In as {currentUser.email}
+                    </div>
+                    {(message) && (
+                        <div className='message-alert'>
+                            {message}
+                        </div>
+                    )}
+                    {(error) && (
+                        <div className='error-alert'>
+                            {error}
+                        </div>
+                    )}
+                    <div className='setup-inner'>
+                        <h2>Welcome!</h2>
+                        <p>
+                            Set your URL. Make sure you like it-you can't change it after!
+                        </p>
+                        <div className='setup-input'>
+                            internetspace.co/<input value={newPageName} onChange={e=>setNewPageName(e.target.value)} type="text" />
+                        </div>
+                        <h3>Your URL will look like this:</h3>
+                        <div className='setup-input-demo'>
+                            internetspace.co/{newPageName.replace(/ /g, '-').replace(/#|@|\/|\./g, '')}
+                        </div>
+                        <input type="submit" disabled={usedCreate} value="Create Page" onClick={handleSetup} />
+                    </div>
                 </div>
             )}
 
             {(!needSetup && !needPreSetup) && (
-                <div className='main'>
-                    <h2>You're in main page</h2>
-                    <p>
-                        Page that belongs to you: {pages.pages}
-                    </p>
-                </div>
+                <>
+                    <div className='main'>
+                        <div className='account-bar'>
+                            Logged In as {currentUser.email}
+                        </div>
+                        <div className='main-inner'>
+                            <h3>Your page:</h3>
+                            <p>
+                                internetspace.co/{pages.pages}
+                            </p>
+                        </div>
+                    </div>
+                    <div className='editor'>
+                        <Editor
+                            recentState={pages}
+                            saveChanges={handleSaveChanges} />
+                    </div>
+                </>
             )}
 
             <div className='actions'>
-                {(message) && (
-                    <div className='message-alert'>
-                        {message}
-                    </div>
-                )}
-                <Link to='/app/update'>
-                    Update Profile
-                </Link>
-                <button onClick={handleLogout}>
-                    Log out
-                </button>
+                <h4>Account Actions</h4>
+                <div className='button-tray'>
+                    <Link className='button' to='/app/update'>
+                        Edit Profile
+                    </Link>
+                    <button className='button red' onClick={handleLogout}>
+                        Log out
+                    </button>
+                </div>
             </div>
-        </>
+        </div>
     )
 }

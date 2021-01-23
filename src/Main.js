@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 
+import './landing.css';
+
 import InstagramIcon from './icons/instagram.svg';
 import GithubIcon from './icons/github.svg';
 import MailIcon from './icons/mail.svg';
@@ -227,7 +229,7 @@ const Main = (props) => {
                     </Link>
                 );
             }
-        })
+        });
 
         return returnData;
     }
@@ -364,12 +366,15 @@ const Main = (props) => {
     return (
         <div className='container'>
             <header>
-                <h2>Internet Space 🌌</h2>
+                <div className='inner-container'>
+                    <h2>internetspace🌌co</h2>
+                </div>
             </header>
+            <div className='introduction'>
+                <h1>Create your own space on the internet.</h1>
+            </div>
             <div className='about'>
-                <h1>
-                    Create your own space on the internet.
-                </h1>
+                <h2>It's fun to. Give it a try.</h2>
                 <div className='demo-container'>
                     <div className='demo'>
                         <div className='profile'>
@@ -391,98 +396,127 @@ const Main = (props) => {
                     </div>
 
                     <div className='engage'>
-                        <h3>Try it</h3>
-                        <div className='input-box'>
-                            <h4>BG Photo URL</h4>
-                            <input type="text" value={bgpURL} onChange={e=>updateBgpURL(e.target.value)} />
+                        <div className='input-section'>
+                            <div className='input-row'>
+                                <div className='input-box'>
+                                    <h4>BG Photo URL</h4>
+                                    <input type="text" value={bgpURL} onChange={e=>updateBgpURL(e.target.value)} />
+                                </div>
+                                <div className='input-box'>
+                                    <h4>Profile Photo URL</h4>
+                                    <input type="text" value={pfpURL} onChange={e=>updatePfpURL(e.target.value)} />
+                                </div>
+                            </div>
+                            <div className='input-row'>
+                                <div className='input-box'>
+                                    <h4>Name</h4>
+                                    <input type="text" value={demoName} onChange={e=>updateDemoName(e.target.value)} />
+                                </div>
+                                <div className='input-box'>
+                                    <h4>Biography</h4>
+                                    <input type="text" value={demoBio} onChange={e=>updateDemoBio(e.target.value)} />
+                                </div>
+                            </div>
                         </div>
-                        <div className='input-box'>
-                            <h4>Profile Photo URL</h4>
-                            <input type="text" value={pfpURL} onChange={e=>updatePfpURL(e.target.value)} />
-                        </div>
-                        <div className='input-box'>
-                            <h4>Name</h4>
-                            <input type="text" value={demoName} onChange={e=>updateDemoName(e.target.value)} />
-                        </div>
-                        <div className='input-box'>
-                            <h4>Biography</h4>
-                            <input type="text" value={demoBio} onChange={e=>updateDemoBio(e.target.value)} />
-                        </div>
-                        <div className='input-box'>
+                        <div className='input-section'>
                             <h4>Socials</h4>
-                            {displaySocialOne && (
-                                <div className='add-social'>
-                                    Social link: 
-                                   <input type="text" value={socialOne} onChange={e=>updateSocialOne(e.target.value)} onFocus={e=>updateSocialOneH(true)} onBlur={e=>updateSocialOneH(false)} />
-                                </div>
-                            )}
-                            {displaySocialTwo && (
-                                <div className='add-social'>
-                                    Social link: 
-                                    <input type="text" value={socialTwo} onChange={e=>updateSocialTwo(e.target.value)} onFocus={e=>updateSocialTwoH(true)} onBlur={e=>updateSocialTwoH(false)}  />
-                                </div>
-                            )}
-                            {displaySocialThree && (
-                                <div className='add-social'>
-                                    Social link: 
-                                <input type="text" value={socialThree} onChange={e=>updateSocialThree(e.target.value)} onFocus={e=>updateSocialThreeH(true)} onBlur={e=>updateSocialThreeH(false)}  />
-                                </div>
-                            )}
-                            {displaySocialFour && (
-                                <div className='add-social'>
-                                    Social link: 
-                                <input type="text" value={socialFour} onChange={e=>updateSocialFour(e.target.value)} onFocus={e=>updateSocialFourH(true)} onBlur={e=>updateSocialFourH(false)}  />
-                                </div>
-                            )}
-                            {displaySocialFive && (
-                                <div className='add-social'>
-                                    Social link: 
-                                <input type="text" value={socialFive} onChange={e=>updateSocialFive(e.target.value)} onFocus={e=>updateSocialFiveH(true)} onBlur={e=>updateSocialFiveH(false)}  />
-                                </div>
-                            )}
+                            <div className='input-box social'>
+                                {displaySocialOne && (
+                                    <div className='add-social'>
+                                        <h5>Link: </h5>
+                                        <input type="text" value={socialOne} onChange={e=>updateSocialOne(e.target.value)} onFocus={e=>updateSocialOneH(true)} onBlur={e=>updateSocialOneH(false)} />
+                                    </div>
+                                )}
+                                {displaySocialTwo && (
+                                    <div className='add-social'>
+                                        <h5>Link: </h5>
+                                        <input type="text" value={socialTwo} onChange={e=>updateSocialTwo(e.target.value)} onFocus={e=>updateSocialTwoH(true)} onBlur={e=>updateSocialTwoH(false)}  />
+                                    </div>
+                                )}
+                                {displaySocialThree && (
+                                    <div className='add-social'>
+                                        <h5>Link: </h5>
+                                        <input type="text" value={socialThree} onChange={e=>updateSocialThree(e.target.value)} onFocus={e=>updateSocialThreeH(true)} onBlur={e=>updateSocialThreeH(false)}  />
+                                    </div>
+                                )}
+                                {displaySocialFour && (
+                                    <div className='add-social'>
+                                        <h5>Link: </h5>
+                                        <input type="text" value={socialFour} onChange={e=>updateSocialFour(e.target.value)} onFocus={e=>updateSocialFourH(true)} onBlur={e=>updateSocialFourH(false)}  />
+                                    </div>
+                                )}
+                                {displaySocialFive && (
+                                    <div className='add-social'>
+                                        <h5>Link: </h5>
+                                        <input type="text" value={socialFive} onChange={e=>updateSocialFive(e.target.value)} onFocus={e=>updateSocialFiveH(true)} onBlur={e=>updateSocialFiveH(false)}  />
+                                    </div>
+                                )}
+                            </div>
                         </div>
-                        <div className='input-box'>
+                        <div className='input-section'>
                             <h4>Websites</h4>
-                            {displayWebsiteOne && (
-                                <div className='add-website'>
-                                    Title: 
-                                    <input type="text" value={websiteOneName} onChange={e=>updateWebsiteOneName(e.target.value)} />
-                                    <br />Link: 
-                                   <input type="text" value={websiteOneLink} onChange={e=>updateWebsiteOneLink(e.target.value)} />
-                                </div>
-                            )}
-                            {displayWebsiteTwo && (
-                                <div className='add-website'>
-                                    Title: 
-                                    <input type="text" value={websiteTwoName} onChange={e=>updateWebsiteTwoName(e.target.value)} />
-                                    <br />Link: 
-                                    <input type="text" value={websiteTwoLink} onChange={e=>updateWebsiteTwoLink(e.target.value)} />
-                                </div>
-                            )}
-                            {displayWebsiteThree && (
-                                <div className='add-website'>
-                                    Title: 
-                                    <input type="text" value={websiteThreeName} onChange={e=>updateWebsiteThreeName(e.target.value)} />
-                                    <br />Link: 
-                                    <input type="text" value={websiteThreeLink} onChange={e=>updateWebsiteThreeLink(e.target.value)} />
-                                </div>
-                            )}
-                            {displayWebsiteFour && (
-                                <div className='add-website'>
-                                    Title: 
-                                    <input type="text" value={websiteFourName} onChange={e=>updateWebsiteFourName(e.target.value)} />
-                                    <br />Link: 
-                                    <input type="text" value={websiteFourLink} onChange={e=>updateWebsiteFourLink(e.target.value)} />
-                                </div>
-                            )}
-                            {displayWebsiteFive && (
-                                <div className='add-website'>
-                                    Title: 
-                                    <input type="text" value={websiteFiveName} onChange={e=>updateWebsiteFiveName(e.target.value)} />
-                                    <br />Link: 
-                                    <input type="text" value={websiteFiveLink} onChange={e=>updateWebsiteFiveLink(e.target.value)} />
-                                </div>
-                            )}
+                            <div className='input-box websites'>
+                                {displayWebsiteOne && (
+                                    <div className='input-row'>
+                                        <div className='website-name'>
+                                            Title: 
+                                            <input type="text" value={websiteOneName} onChange={e=>updateWebsiteOneName(e.target.value)} />
+                                        </div>
+                                        <div className='website-link'>
+                                            Link: 
+                                            <input type="text" value={websiteOneLink} onChange={e=>updateWebsiteOneLink(e.target.value)} />
+                                        </div>
+                                    </div>
+                                )}
+                                {displayWebsiteTwo && (
+                                    <div className='input-row'>
+                                        <div className='website-name'>
+                                            Title: 
+                                            <input type="text" value={websiteTwoName} onChange={e=>updateWebsiteTwoName(e.target.value)} />
+                                        </div>
+                                        <div className='website-link'>
+                                            Link: 
+                                            <input type="text" value={websiteTwoLink} onChange={e=>updateWebsiteTwoLink(e.target.value)} />
+                                        </div>
+                                    </div>
+                                )}
+                                {displayWebsiteThree && (
+                                    <div className='input-row'>
+                                        <div className='website-name'>
+                                            Title: 
+                                            <input type="text" value={websiteThreeName} onChange={e=>updateWebsiteThreeName(e.target.value)} />
+                                        </div>
+                                        <div className='website-link'>
+                                            Link: 
+                                            <input type="text" value={websiteThreeLink} onChange={e=>updateWebsiteThreeLink(e.target.value)} />
+                                        </div>
+                                    </div>
+                                )}
+                                {displayWebsiteFour && (
+                                    <div className='input-row'>
+                                        <div className='website-name'>
+                                            Title: 
+                                            <input type="text" value={websiteFourName} onChange={e=>updateWebsiteFourName(e.target.value)} />
+                                        </div>
+                                        <div className='website-link'>
+                                            Link: 
+                                            <input type="text" value={websiteFourLink} onChange={e=>updateWebsiteFourLink(e.target.value)} />
+                                        </div>
+                                    </div>
+                                )}
+                                {displayWebsiteFive && (
+                                    <div className='input-row'>
+                                        <div className='website-name'>
+                                            Title: 
+                                            <input type="text" value={websiteFiveName} onChange={e=>updateWebsiteFiveName(e.target.value)} />
+                                        </div>
+                                        <div className='website-link'>
+                                            Link: 
+                                            <input type="text" value={websiteFiveLink} onChange={e=>updateWebsiteFiveLink(e.target.value)} />
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -490,19 +524,20 @@ const Main = (props) => {
             <div className='lightscamera'>
                 {(!currentUser) ? (
                     <>
-                        <h3>Get started!</h3>
-                        <Link to='/app/register'>
-                            Create an Account
-                        </Link>
-                        <h4>or</h4>
-                        <Link to='/app/login'>
-                            Log In
-                        </Link>
+                        <h2>Ready? Get started!</h2>
+                        <div className='button-tray'>
+                            <Link className='button green' to='/app/register'>
+                                Create an Account
+                            </Link>
+                            <Link className='button' to='/app/login'>
+                                Log In
+                            </Link>
+                        </div>
                     </>
                 ) : (
                     <>
-                        <h3>Go to dashboard!</h3>
-                        <Link to='/app/preview'>
+                        <h2>Go to dashboard!</h2>
+                        <Link className='button' to='/app/preview'>
                             Click Here
                         </Link>
                     </>

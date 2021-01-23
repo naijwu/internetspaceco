@@ -23,7 +23,7 @@ export default function Login() {
             await login(email, password);
             history.push('/app/preview');
         } catch {
-            setError('failed to log in');
+            setError('Failed to log in');
         }
 
         setLoading(false);
@@ -31,29 +31,37 @@ export default function Login() {
 
     return (
         <>
-            <div>
+            <div className='account-component'>
                 <h1>Login</h1>
                 {error && (
                     <div className='error-alert'>
                         {error}
                     </div>
                 )}
-                email:
-                <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
-                <br/>
-                password:
-                <input type="text" value={password} onChange={e=>setPassword(e.target.value)} />
-                <br/>
-                <div className='forgot-password'>
-                    <Link to='/app/forgot' >
+                <div className='input-group'>
+                    <h3>Email</h3>
+                    <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
+                </div>
+                <div className='input-group'>
+                    <h3>Password</h3>
+                    <input type="text" value={password} onChange={e=>setPassword(e.target.value)} />
+                </div>
+                <div className='text-tray'>
+                    <Link className='text-link' to='/app/forgot' >
                         Forgot password
                     </Link>
+                    <Link className='text-link' to='/app/register' >
+                        Register instead
+                    </Link>
                 </div>
-                <Link to='/app/register' >
-                    Register instead
+                <div className='input-group'>
+                    <input disabled={loading} onClick={handleSubmit} type="submit" value="Login" />
+                </div>
+            </div>
+            <div className='account-component-back'>
+                <Link className='text-link back' to='/' >
+                    Return Home
                 </Link>
-                <br/>
-                <input disabled={loading} onClick={handleSubmit} type="submit" value="Login" />
             </div>
         </>
     )

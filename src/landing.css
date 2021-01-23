@@ -1,0 +1,48 @@
+:root {
+    --header-height:100px;
+
+    --inner-container-width: 1200px;
+}
+
+.inner-container {
+    width:var(--inner-container-width);
+    margin:0 auto;
+}
+
+header {
+    height:var(--header-height);
+    display:flex;
+    align-items:center;
+    font-size:15px;
+}
+
+.introduction {
+    display:flex;
+    align-items:center;
+    justify-content: center;
+    height:calc(100vh - var(--header-height));
+    padding-bottom:100px;
+    box-sizing: border-box;
+    padding-left:6vw;
+    padding-right:6vw;
+}
+
+.introduction h1 {
+    color:rgb(31, 31, 31);
+    font-size:70px;
+    text-align: center;
+}
+
+.about {
+    text-align:center;
+}
+
+.about h2,
+.lightscamera h2 {
+    font-size:45px;
+    padding-bottom:75px;
+}
+
+.lightscamera {
+    padding: 100px 0 175px 0;
+}

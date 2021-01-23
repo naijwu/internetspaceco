@@ -46,7 +46,7 @@ export default function Register() {
 
             history.push('/app/login')
         } catch {
-            setError('failed to create an account');
+            setError('Failed to create an account');
         }
 
         setLoading(false);
@@ -54,26 +54,37 @@ export default function Register() {
 
     return (
         <>
-            <div>
+            <div className='account-component'>
                 <h1>Register</h1>
                 {error && (
                     <div className='error-alert'>
                         {error}
                     </div>
                 )}
-                email:
-                <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
-                <br/>
-                password:
-                <input type="text" value={password} onChange={e=>setPassword(e.target.value)} />
-                <br/>
-                confirm password:
-                <input type="text" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} />
-                <br/>
-                <input disabled={loading} onClick={handleSubmit} type="submit" value="Sign Up" />
-                <br />
-                <Link to='/app/login' >
-                    Login Instead
+                <div className='input-group'>
+                    <h3>Email</h3>
+                    <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
+                </div>
+                <div className='input-group'>
+                    <h3>Password</h3>
+                    <input type="text" value={password} onChange={e=>setPassword(e.target.value)} />
+                </div>
+                <div className='input-group'>
+                    <h3>Confirm Password</h3>
+                    <input type="text" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} />
+                </div>
+                <div className='text-tray'>
+                    <Link className='text-link' to='/app/login' >
+                        Login Instead
+                    </Link>
+                </div>
+                <div className='input-group'>
+                    <input disabled={loading} onClick={handleSubmit} type="submit" value="Register" />
+                </div>
+            </div>
+            <div className='account-component-back'>
+                <Link className='text-link back' to='/' >
+                    Return Home
                 </Link>
             </div>
         </>

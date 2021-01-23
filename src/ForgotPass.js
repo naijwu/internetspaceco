@@ -20,9 +20,9 @@ export default function ForgotPass() {
             setError('')
             setLoading(true);
             await resetPassword(email);
-            setMessage('check inbox for further instructions g');
+            setMessage('Check inbox for further instructions g');
         } catch {
-            setError('failed to reset password');
+            setError('Failed to reset password');
         }
 
         setLoading(false);
@@ -30,8 +30,8 @@ export default function ForgotPass() {
 
     return (
         <>
-            <div>
-                <h1>Password Reset</h1>
+            <div className='account-component'>
+                <h1>Forgot Password</h1>
                 {error && (
                     <div className='error-alert'>
                         {error}
@@ -42,14 +42,18 @@ export default function ForgotPass() {
                         {message}
                     </div>
                 )}
-                email:
-                <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
-                <br/>
-                <Link to='/app/login' >
-                    Go to login
-                </Link>
-                <br/>
-                <input disabled={loading} onClick={handleSubmit} type="submit" value="Forgot Password" />
+                <div className='input-group'>
+                    <h3>Email</h3>
+                    <input type="text" value={email} onChange={e=>setEmail(e.target.value)} />
+                </div>
+                <div className='text-tray'>
+                    <Link className='text-link' to='/app/login' >
+                        Go to login
+                    </Link>
+                </div>
+                <div className='input-group'>
+                    <input disabled={loading} onClick={handleSubmit} type="submit" value="Reset Password" />
+                </div>
             </div>
         </>
     )
