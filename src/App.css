@@ -322,10 +322,10 @@ input[type="submit"]:hover {
 }
 
 .button.google {
-  background:#cf423265;
-  color:#ca4132;
+  background:#cf4232e3;
+  color:#FFF;
 } .button.google:hover {
-  background:#cf42329c;
+  background:#cf4232;
 }
 
 /* Button disabled styles */

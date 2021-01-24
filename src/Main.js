@@ -40,6 +40,7 @@ const Main = (props) => {
     const [demoName, updateDemoName] = useState('Elon Musk');
     const [demoBio, updateDemoBio] = useState('Martian');
 
+    // Elon musk sample data lmao - we love papa elon
     const [websites, updateWebsites] = useState([]); // {img: 'img url', name: 'link name', link: '',}
     const [socials, updateSocials] = useState([]);
 
@@ -48,10 +49,10 @@ const Main = (props) => {
 
     // const to manage adding social icons (messy... unoptimized.... :( )
     const [displaySocialOne, updateDisplaySocialOne] = useState(true);
-    const [socialOne, updateSocialOne] = useState('');
+    const [socialOne, updateSocialOne] = useState('http://twitter.com/elonmusk');
     const [socialOneH, updateSocialOneH] = useState(false);
     const [displaySocialTwo, updateDisplaySocialTwo] = useState(false);
-    const [socialTwo, updateSocialTwo] = useState('');
+    const [socialTwo, updateSocialTwo] = useState('http://instagram.com/elonmusk');
     const [socialTwoH, updateSocialTwoH] = useState(false);
     const [displaySocialThree, updateDisplaySocialThree] = useState(false);
     const [socialThree, updateSocialThree] = useState('');
@@ -236,16 +237,16 @@ const Main = (props) => {
     }
 
     const [displayWebsiteOne, updateDisplayWebsiteOne] = useState(true);
-    const [websiteOneName, updateWebsiteOneName] = useState('');
-    const [websiteOneLink, updateWebsiteOneLink] = useState('');
+    const [websiteOneName, updateWebsiteOneName] = useState('Electric Toys');
+    const [websiteOneLink, updateWebsiteOneLink] = useState('http://tesla.com');
     
     const [displayWebsiteTwo, updateDisplayWebsiteTwo] = useState(false);
-    const [websiteTwoName, updateWebsiteTwoName] = useState('');
-    const [websiteTwoLink, updateWebsiteTwoLink] = useState('');
+    const [websiteTwoName, updateWebsiteTwoName] = useState('Mars Mission');
+    const [websiteTwoLink, updateWebsiteTwoLink] = useState('http://spacex.com');
     
     const [displayWebsiteThree, updateDisplayWebsiteThree] = useState(false);
-    const [websiteThreeName, updateWebsiteThreeName] = useState('');
-    const [websiteThreeLink, updateWebsiteThreeLink] = useState('');
+    const [websiteThreeName, updateWebsiteThreeName] = useState('Tunnels?');
+    const [websiteThreeLink, updateWebsiteThreeLink] = useState('http://boringcompany.com');
     
     const [displayWebsiteFour, updateDisplayWebsiteFour] = useState(false);
     const [websiteFourName, updateWebsiteFourName] = useState('');
