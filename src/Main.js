@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
+import { database } from './firebase';
 
 import './landing.css';
 
@@ -34,7 +35,7 @@ const socialOptions = [
 
 const Main = (props) => {
 
-    const { currentUser } = useAuth();
+    const { currentUser, loginUsingGoogle } = useAuth();
 
     const [demoName, updateDemoName] = useState('Elon Musk');
     const [demoBio, updateDemoBio] = useState('Martian');
@@ -224,9 +225,9 @@ const Main = (props) => {
 
             if (icon) {
                 returnData.push(
-                    <Link to={{pathname: `${item.link}`}}  className={`icon ${item.type}`}>
+                    <a target="_blank" rel="noreferrer" href={`${item.link}`} className={`icon ${item.type}`}>
                         <img src={icon} alt={item.type} />
-                    </Link>
+                    </a>
                 );
             }
         });
@@ -348,19 +349,66 @@ const Main = (props) => {
         websites.forEach((item) => {
             if(item.name && item.link) {
                 returnData.push(
-                    <Link className='link-item' to={{pathname: `${item.link}`}}>
+                    <a target="_blank" rel="noreferrer" className='link-item' href={`${item.link}`}>
                         {/* <img className='link-image' src={} /> /* perhaps send opengraph req */}
-                        <div className='link-img'>{item.img}</div>
+                        {/* <div className='link-img'>{item.img}</div> */}
                         <div className='link-content'>
                             <div className='link-text'>{item.name}</div>
                             <div className='link-url'>{item.link}</div>
                         </div>
-                    </Link>
+                    </a>
                 );
             }
         })
 
         return returnData;
+    }
+
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const history = useHistory();
+
+    async function handleGoogleLogin(e) {
+        e.preventDefault();
+        
+        try {
+            setError('');
+            setLoading(true);
+            const returnData = await loginUsingGoogle();
+
+            database.collection('users').doc(returnData.user.uid).get().then((doc) => {
+                // not the best method, but checking if they're a first time user (or effectively first time--but not effective to do this check every login)
+                if(doc.exists) {
+                    // is not a new user
+                    history.push('/app/preview');
+                    setLoading(false);
+                } else if (!doc.exists) {
+                    // is a new user
+                    
+                    database.collection("users").doc(returnData.user.uid).set({
+                        pages: [],
+                    })
+                    .then(function() {
+                        console.log("Document successfully written!");
+                    })
+                    .catch(function(error) {
+                        console.error("Error writing document: ", error);
+                        setError('Failed to create new record as first time registrant: ' + error);
+                    });
+
+                    setLoading(false);
+                    history.push('/app/preview');
+                }
+            }).then(function() {
+
+            }).catch(function(err) {
+                setError('Failed to communicate with server: ' + err);
+            });
+        } catch {
+            setError('Failed to log in');
+        }
+
+        setLoading(false);
     }
 
     return (
@@ -529,13 +577,21 @@ const Main = (props) => {
                     <>
                         <h2>Ready? Get started!</h2>
                         <div className='button-tray'>
-                            <Link className='button green' to='/app/register'>
+                            {/* <Link className='button green' to='/app/register'>
                                 Create an Account
                             </Link>
                             <Link className='button' to='/app/login'>
                                 Log In
-                            </Link>
+                            </Link> */}
                         </div>
+                        <button disabled={loading} onClick={handleGoogleLogin} className='button google'>
+                            Log In Using Google
+                        </button>
+                        {(error) && (
+                            <div className='homepage-error'>
+                                {error}
+                            </div>
+                        )}
                     </>
                 ) : (
                     <>

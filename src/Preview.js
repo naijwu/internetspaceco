@@ -82,10 +82,11 @@ export default function Preview() {
         
         let allowedAction = (needSetup) && (!needPreSetup) && newPageName;
         console.log("is duplicate: " + isDuplicate);
+        let cleanedNewPageName = newPageName.replace(/ /g, '-').replace(/#|@|\/|\.|\\|!|~|\||\+|\?|\^|&|\*|\(|\)|<|>|\{|\}|`/g, '');
 
         if(allowedAction) {
 
-            database.collection('users').doc(newPageName).get().then((doc) => {
+            database.collection('users').doc(cleanedNewPageName).get().then((doc) => {
                 if(doc.exist) {
                     isDuplicate = true;
                 } else {
@@ -96,7 +97,7 @@ export default function Preview() {
             if(!isDuplicate) {
                 
                 database.collection("users").doc(currentUser.uid).set({
-                    pages: [newPageName]
+                    pages: [cleanedNewPageName]
                 })
                 .then(function() {
 
@@ -114,9 +115,9 @@ export default function Preview() {
                         websites: []
                     };
 
-                    database.collection("pages").doc(newPageName).set(dataConstruct)
+                    database.collection("pages").doc(cleanedNewPageName).set(dataConstruct)
                     .then(function() {
-                        setMessage(`Document successfully written! Link: /${newPageName}`);
+                        setMessage(`Document successfully written! Link: /${cleanedNewPageName}`);
                         setUsedCreate(true);
                         history.go(0);
                     })
@@ -149,6 +150,54 @@ export default function Preview() {
         }
     }
 
+    const [loading, setLoading] = useState(false);
+    const [confirming, setConfirming] = useState(false);
+    const [displayConfirm, setDisplayConfirm] = useState(false);
+    const [pageDeleteError, setPageDeleteError] = useState('');
+
+    function showDeleteConfirm() {
+        setDisplayConfirm(true);
+        setConfirming(true);
+    }
+
+    function hideDeleteConfirm() {
+        setDisplayConfirm(false);
+        setConfirming(false);
+    }
+
+    async function handleDeletePage() {
+        setLoading(true);
+
+        // check if there even is a page to delete & user to delete from
+        if(pages.pages && currentUser) {
+
+            // first: delete the page document under 'pages' collection
+            // second: delete the profile URL (page's URL) under 'users' collection, under user id's collection
+
+            database.collection("pages").doc(pages.pages[0]).delete()
+            .then(function() {
+
+                database.collection("users").doc(currentUser.uid).set({
+                    pages: [],
+                }).then(function() {
+                    // both delete success - time to party
+
+                    setLoading(false);
+                    history.go(0);
+                }).catch(function(err) {
+                    setPageDeleteError('Error resetting pages array under users collection: ' + err);
+        
+                    setLoading(false);
+                })
+            })
+            .catch(function(error) {
+                setPageDeleteError('Error deleting page under pages collection: ' + error);
+    
+                setLoading(false);
+            });
+        }
+    }
+
     return (
         <div className='preview'>
             {(needSetup) && (
@@ -178,7 +227,7 @@ export default function Preview() {
                             </div>
                             <h3>Your URL will look like this:</h3>
                             <div className='setup-input-demo'>
-                                internetspace.co/{newPageName.replace(/ /g, '-').replace(/#|@|\/|\.|\\|!|~|\||\+|\?/g, '')}
+                                internetspace.co/{newPageName.replace(/ /g, '-').replace(/#|@|\/|\.|\\|!|~|\||\+|\?|\^|&|\*|\(|\)|<|>|\{|\}|`/g, '')}
                             </div>
                             <input type="submit" disabled={usedCreate} value="Create Page" onClick={handleSetup} />
                         </div>
@@ -214,11 +263,32 @@ export default function Preview() {
                     <Link className='button' to='/app/update'>
                         Edit Profile
                     </Link>
-                    <button className='button red' onClick={handleLogout}>
+                    <Link className='button red' onClick={handleLogout}>
                         Log out
-                    </button>
+                    </Link>
                 </div>
             </div>
+
+            {((!needSetup) && (!needPreSetup)) && (
+                <div className='page-actions'>
+                    <h4>Page Actions</h4>
+                    <div className='delete-container'>
+                        <button disabled={loading} className={`button red deletepage dp${confirming}`} onClick={(confirming) ? hideDeleteConfirm : showDeleteConfirm}>
+                            {(confirming) ? 'Cancel' : 'Delete Page'}
+                        </button>
+                        {(displayConfirm) && (
+                            <button disabled={loading} className='page-delete-confirm' onClick={handleDeletePage}>
+                                Confirm and Delete
+                            </button>
+                        )}
+                        {(pageDeleteError) && (
+                            <div className='page-delete-error'>
+                                {pageDeleteError}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     )
 }

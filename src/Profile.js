@@ -149,27 +149,32 @@ export default function Profile() {
     // TODO: Check if user is signed in; if signed in, check if UID matches UID of doc, if does, show option to edit 
 
     return (
-        <div className={`profile-container ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}>
-            <div className='profile'>
-                <div className='photos'>
-                    {(bgpURL) && (
-                        <img className='bgp' src={bgpURL} alt="background" />
-                    )}
-                    {(pfpURL) && (
-                        <img className='pfp' src={pfpURL} alt="profile" />
-                    )}
-                </div>
-                <div className='info'>
-                    <h3>{name}</h3>
-                    <p>{bio}</p>
-                </div>
-                <div className='socials'>
-                    {socials && displaySocials()}
-                </div>
-                <div className='links'>
-                    {websites && displayWebsite()}
+        <>
+            <div className={`profile-container ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}>
+                <div className='profile'>
+                    <div className='photos'>
+                        {(bgpURL) && (
+                            <img className='bgp' src={bgpURL} alt="background" />
+                        )}
+                        {(pfpURL) && (
+                            <img className='pfp' src={pfpURL} alt="profile" />
+                        )}
+                    </div>
+                    <div className='info'>
+                        <h3>{name}</h3>
+                        <p>{bio}</p>
+                    </div>
+                    <div className='socials'>
+                        {socials && displaySocials()}
+                    </div>
+                    <div className='links'>
+                        {websites && displayWebsite()}
+                    </div>
                 </div>
             </div>
-        </div>
+            <a className='profile-footer-link' href="http://internetspace.co/">
+                internetspace🌌co
+            </a>
+        </>
     );
 }

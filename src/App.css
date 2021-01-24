@@ -321,10 +321,69 @@ input[type="submit"]:hover {
   background:#6ce81a7e;
 }
 
-.button-tray .button {
-  margin-right:20px;
+.button.google {
+  background:#cf423265;
+  color:#ca4132;
+} .button.google:hover {
+  background:#cf42329c;
 }
 
+/* Button disabled styles */
+
+.button:disabled,
+input[type="submit"]:disabled {
+  background:grey;
+  color:darkgrey;
+}
+
+/* deletepage true TF button content: cancel */
+.button.deletepage {
+  outline:none;
+}
+.button.dptrue {
+  background:#1a73e862;
+  color:#0051bb;
+  outline:none;
+  border-radius:5px 0 0 5px;
+}
+.button.dptrue:hover {
+  background:#1a73e896;
+}
+
+.page-actions .button:disabled,
+.page-actions .page-delete-confirm:disabled {
+  background:grey;
+  color:darkgrey;
+}
+
+.delete-container {
+  display:flex;
+}
+
+.page-delete-confirm {
+  border:none;
+  box-sizing: border-box;
+  padding:9px 15px;
+  font-size:15px;
+  cursor:pointer;
+  font-weight:bold;
+  outline:none;
+  border-radius:0 5px 5px 0;
+  background:#e8321a62;
+  color:#bb0c00;
+} .page-delete-confirm:hover {
+  background:#e8321aa8;
+}
+
+
+/* button tray styles */
+
+.button-tray {
+  display:flex;
+}
+.button-tray .button {
+  margin-right:15px;
+}
 .button-tray .button:last-child {
   margin-right:0;
 }
@@ -418,11 +477,29 @@ input[type="submit"]:hover {
 }
 
 
+/* home page login trays */
+
+.homepage-error {
+  background:#ff11112f;
+  margin-top:15px;
+  box-sizing: border-box;
+  padding:15px;
+  border-radius:5px;
+  color:#ff1111;
+  width:auto;
+  display:table;
+  margin-right:auto;
+  font-weight:bold;
+  margin-left:auto;
+}
+
+
 /* Preview Page Styles - Actions (global) */
 
-.actions {
+.actions,
+.page-actions {
   width:350px;
-  margin: 0 auto 50px auto;
+  margin: 0 auto 20px auto;
   box-sizing: border-box;
   padding:20px;
   background:#1a73e811;
@@ -431,13 +508,20 @@ input[type="submit"]:hover {
   transition:0.2s cubic-bezier(0.075, 0.82, 0.165, 1);
 }
 
-.actions:hover {
+.actions:hover,
+.page-actions:hover {
   background:#1a73e81a;
 }
 
-.actions h4 {
-  padding-bottom:20px;
+.actions h4,
+.page-actions h4 {
+  padding-bottom:10px;
 }
+
+.page-actions {
+  margin-bottom:100px;
+}
+
 
 
 /* Preview Page Styles - Setup */
@@ -537,4 +621,49 @@ input[type="submit"]:hover {
 .save-change .save-change-reminder {
   color:#777;
   font-style:italic;
+}
+
+a.profile-footer-link {
+  font-weight:bold;
+  opacity:0.2;
+  color:black;
+  text-decoration: none;
+  margin:0 auto;
+  display:table;
+  font-size:14px;
+}
+
+
+
+@media only screen and (max-width: 600px) {
+  .demo-container {
+    width:100%;
+    flex-direction: column;
+  }
+
+  .demo-container .engage {
+    width:350px;
+    margin:35px auto 0 auto;
+  }
+
+  .inner-container h2 {
+    font-size:16px;
+  }
+
+  .introduction h1 {
+    font-size:32px !important;
+  }
+
+  .about h2,
+  .lightscamera h2 {
+    font-size:28px !important;
+  }
+
+  .profile-container {
+    margin:35px auto;
+  }
+
+  .editor {
+    padding-top:0;
+  }
 }
