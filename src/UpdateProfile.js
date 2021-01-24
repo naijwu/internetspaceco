@@ -33,7 +33,7 @@ export default function UpdateProfile() {
         }
 
         Promise.all(promises).then(() => {
-            history.push('/login');
+            history.push('/app/login');
         }).catch(() => {
             setError('Failed to update account. Try logging out and back in.');
         }).finally(() => {

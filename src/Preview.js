@@ -260,9 +260,9 @@ export default function Preview() {
             <div className='actions'>
                 <h4>Account Actions</h4>
                 <div className='button-tray'>
-                    <Link className='button' to='/app/update'>
+                    {/* <Link className='button' to='/app/update'>
                         Edit Profile
-                    </Link>
+                    </Link> */}
                     <Link className='button red' onClick={handleLogout}>
                         Log out
                     </Link>
