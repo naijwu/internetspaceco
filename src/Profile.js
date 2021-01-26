@@ -114,7 +114,7 @@ export default function Profile() {
 
             if (icon) {
                 returnData.push(
-                    <a target="_blank" rel="noreferrer" href={`${item.link}`} className={`icon ${item.type}`}>
+                    <a href={`${item.link}`} className={`icon ${item.type}`}>
                         <img src={icon} alt={item.type} />
                     </a>
                 );
@@ -130,7 +130,7 @@ export default function Profile() {
         websites.forEach((item) => {
             if(item.name && item.link) {
                 returnData.push(
-                    <a target="_blank" rel="noreferrer" className='link-item' href={`${item.link}`}>
+                    <a className='link-item' href={`${item.link}`}>
                         {/* <img className='link-image' src={} /> /* perhaps send opengraph req */}
                         {/* <div className='link-img'>{item.img}</div> */}
                         <div className='link-content'>
