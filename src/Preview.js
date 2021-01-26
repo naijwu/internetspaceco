@@ -78,7 +78,7 @@ export default function Preview() {
         setError('');
         setMessage('');
 
-        let isDuplicate = false;
+        let isDuplicate = true;
         
         let allowedAction = (needSetup) && (!needPreSetup) && newPageName;
         console.log("is duplicate: " + isDuplicate);
@@ -86,8 +86,8 @@ export default function Preview() {
 
         if(allowedAction) {
 
-            database.collection('users').doc(cleanedNewPageName).get().then((doc) => {
-                if(doc.exist) {
+            database.collection('pages').doc(cleanedNewPageName).get().then((doc) => {
+                if(doc.exists) {
                     isDuplicate = true;
                 } else {
                     isDuplicate = false;
@@ -132,7 +132,7 @@ export default function Preview() {
 
 
             } else {
-                setError('Error - Name already exists');
+                setError('Error creating - Name already exists');
             }
         } else {
             setError('Error creating - already have a page or need to fill in name!')

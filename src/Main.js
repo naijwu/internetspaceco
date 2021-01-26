@@ -95,30 +95,30 @@ const Main = (props) => {
     }
 
     useEffect(() => {
-        if(socialOneH || socialOne) {
+        if(socialOne) {
             updateDisplaySocialOne(true);
         }
-        if((socialOneH && socialOne) || (socialTwoH & socialTwo) || socialTwo) {
+        if((socialOne) || (socialTwo)) {
             updateDisplaySocialTwo(true);
         } else if (!(socialOne)) {
             updateDisplaySocialTwo(false);
         }
-        if((socialTwoH && socialTwo) || (socialThreeH & socialThree) || socialThree) {
+        if((socialTwo) || (socialThree)) {
             updateDisplaySocialThree(true);
         } else if (!(socialTwo)) {
             updateDisplaySocialThree(false);
         }
-        if((socialThreeH && socialThree) || (socialFourH && socialFour) || socialFour) {
+        if((socialThree) || socialFour) {
             updateDisplaySocialFour(true);
         } else if (!(socialThree)) {
             updateDisplaySocialFour(false);
         }
-        if((socialFourH && socialFour) || (socialFiveH && socialFive) || socialFive) {
+        if((socialFour) || socialFive) {
             updateDisplaySocialFive(true);
         } else if (!(socialFour)) {
             updateDisplaySocialFive(false);
         }
-    }, [socialOneH, socialOne, socialTwoH, socialTwo, socialThreeH, socialThree, socialFourH, socialFour, socialFiveH, socialFive]);
+    }, [socialOne, socialTwo, socialThree, socialFour, socialFive]);
 
     useEffect(() => {
         let type = returnSocialType(socialOne);
@@ -476,31 +476,31 @@ const Main = (props) => {
                                 {displaySocialOne && (
                                     <div className='add-social'>
                                         <h5>Link: </h5>
-                                        <input type="text" value={socialOne} onChange={e=>updateSocialOne(e.target.value)} onFocus={e=>updateSocialOneH(true)} onBlur={e=>updateSocialOneH(false)} />
+                                        <input type="text" value={socialOne} onChange={e=>updateSocialOne(e.target.value)} />
                                     </div>
                                 )}
                                 {displaySocialTwo && (
                                     <div className='add-social'>
                                         <h5>Link: </h5>
-                                        <input type="text" value={socialTwo} onChange={e=>updateSocialTwo(e.target.value)} onFocus={e=>updateSocialTwoH(true)} onBlur={e=>updateSocialTwoH(false)}  />
+                                        <input type="text" value={socialTwo} onChange={e=>updateSocialTwo(e.target.value)} />
                                     </div>
                                 )}
                                 {displaySocialThree && (
                                     <div className='add-social'>
                                         <h5>Link: </h5>
-                                        <input type="text" value={socialThree} onChange={e=>updateSocialThree(e.target.value)} onFocus={e=>updateSocialThreeH(true)} onBlur={e=>updateSocialThreeH(false)}  />
+                                        <input type="text" value={socialThree} onChange={e=>updateSocialThree(e.target.value)} />
                                     </div>
                                 )}
                                 {displaySocialFour && (
                                     <div className='add-social'>
                                         <h5>Link: </h5>
-                                        <input type="text" value={socialFour} onChange={e=>updateSocialFour(e.target.value)} onFocus={e=>updateSocialFourH(true)} onBlur={e=>updateSocialFourH(false)}  />
+                                        <input type="text" value={socialFour} onChange={e=>updateSocialFour(e.target.value)} />
                                     </div>
                                 )}
                                 {displaySocialFive && (
                                     <div className='add-social'>
                                         <h5>Link: </h5>
-                                        <input type="text" value={socialFive} onChange={e=>updateSocialFive(e.target.value)} onFocus={e=>updateSocialFiveH(true)} onBlur={e=>updateSocialFiveH(false)}  />
+                                        <input type="text" value={socialFive} onChange={e=>updateSocialFive(e.target.value)} />
                                     </div>
                                 )}
                             </div>

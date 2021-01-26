@@ -195,6 +195,7 @@ header {
   display:flex;
   flex-direction:column;
   align-items:flex-start;
+  text-align:left;
 }
 
 .profile .link-item .link-content .link-text {
@@ -204,6 +205,11 @@ header {
 .profile .link-item .link-content .link-url {
   color:#777;
   font-size: 15px;
+  max-width:250px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-align:left;
+  text-overflow:ellipsis;
 }
 
 .engage {
