@@ -18,20 +18,20 @@ import LinkedinIcon from './icons/linkedin.svg';
 import TrelloIcon from './icons/trello.svg';
 import YoutubeIcon from './icons/youtube.svg';
 
-const socialOptions = [
-    "instagram",
-    "github",
-    "email",
-    "facebook",
-    "twitter",
-    "twitch",
-    "codepen",
-    "figma",
-    "gitlab",
-    "linkedin",
-    "trello",
-    "youtube"
-];
+// const socialOptions = [
+//     "instagram",
+//     "github",
+//     "email",
+//     "facebook",
+//     "twitter",
+//     "twitch",
+//     "codepen",
+//     "figma",
+//     "gitlab",
+//     "linkedin",
+//     "trello",
+//     "youtube"
+// ];
 
 const Main = (props) => {
 
@@ -50,19 +50,14 @@ const Main = (props) => {
     // const to manage adding social icons (messy... unoptimized.... :( )
     const [displaySocialOne, updateDisplaySocialOne] = useState(true);
     const [socialOne, updateSocialOne] = useState('http://twitter.com/elonmusk');
-    const [socialOneH, updateSocialOneH] = useState(false);
     const [displaySocialTwo, updateDisplaySocialTwo] = useState(false);
     const [socialTwo, updateSocialTwo] = useState('http://instagram.com/elonmusk');
-    const [socialTwoH, updateSocialTwoH] = useState(false);
     const [displaySocialThree, updateDisplaySocialThree] = useState(false);
     const [socialThree, updateSocialThree] = useState('');
-    const [socialThreeH, updateSocialThreeH] = useState(false);
     const [displaySocialFour, updateDisplaySocialFour] = useState(false);
     const [socialFour, updateSocialFour] = useState('');
-    const [socialFourH, updateSocialFourH] = useState(false);
     const [displaySocialFive, updateDisplaySocialFive] = useState(false);
     const [socialFive, updateSocialFive] = useState('');
-    const [socialFiveH, updateSocialFiveH] = useState(false);
 
     const returnSocialType = (link) => {
         if (link.indexOf('instagram') > -1) {
@@ -280,7 +275,6 @@ const Main = (props) => {
     }, [websiteOneName, websiteOneLink, websiteTwoName, websiteTwoLink, websiteThreeName, websiteThreeLink, websiteFourName, websiteFourLink, websiteFiveName, websiteFiveLink]);
 
     useEffect(() => {
-        let img = ''
         let name = websiteOneName;
         let link = websiteOneLink;
         let array = websites;
@@ -293,7 +287,6 @@ const Main = (props) => {
     }, [websiteOneName, websiteOneLink, websites]);
     
     useEffect(() => {
-        let img = ''
         let name = websiteTwoName;
         let link = websiteTwoLink;
         let array = websites;
@@ -306,7 +299,6 @@ const Main = (props) => {
     }, [websiteTwoName, websiteTwoLink, websites])
     
     useEffect(() => {
-        let img = ''
         let name = websiteThreeName;
         let link = websiteThreeLink;
         let array = websites;
@@ -319,7 +311,6 @@ const Main = (props) => {
     }, [websiteThreeName, websiteThreeLink, websites])
     
     useEffect(() => {
-        let img = ''
         let name = websiteFourName;
         let link = websiteFourLink;
         let array = websites;
@@ -332,7 +323,6 @@ const Main = (props) => {
     }, [websiteFourName, websiteFourLink, websites])
     
     useEffect(() => {
-        let img = ''
         let name = websiteFiveName;
         let link = websiteFiveLink;
         let array = websites;
@@ -423,7 +413,7 @@ const Main = (props) => {
                 <h1>Create your own space on the internet.</h1>
             </div>
             <div className='about'>
-                <h2>It's fun to. Give it a try.</h2>
+                <h2>It's fun. Give it a try.</h2>
                 <div className='demo-container'>
                     <div className={`profile-container ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}>
                         <div className='profile'>

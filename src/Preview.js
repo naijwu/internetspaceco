@@ -77,63 +77,53 @@ export default function Preview() {
 
         setError('');
         setMessage('');
-
-        let isDuplicate = true;
         
         let allowedAction = (needSetup) && (!needPreSetup) && newPageName;
-        console.log("is duplicate: " + isDuplicate);
-        let cleanedNewPageName = newPageName.replace(/ /g, '-').replace(/#|@|\/|\.|\\|!|~|\||\+|\?|\^|&|\*|\(|\)|<|>|\{|\}|`/g, '');
+        let cleanedNewPageName = newPageName.replace(/ /g, '-').replace(/#|@|\/|\.|\\|!|~|\||\+|\?|\^|&|\*|\(|\)|<|>|\{|\}|`|;/g, '').substring(0, 20);
 
         if(allowedAction) {
 
             database.collection('pages').doc(cleanedNewPageName).get().then((doc) => {
                 if(doc.exists) {
-                    isDuplicate = true;
+                    setError('Error creating - Name already exists');
                 } else {
-                    isDuplicate = false;
+                    database.collection("users").doc(currentUser.uid).set({
+                        pages: [cleanedNewPageName]
+                    })
+                    .then(function() {
+    
+                        let dataConstruct = {
+                            user_id: currentUser.uid,
+                            data: {
+                                biography: '',
+                                name: ''
+                            },
+                            images: {
+                                background: '',
+                                profile: ''
+                            },
+                            socials: [],
+                            websites: []
+                        };
+    
+                        database.collection("pages").doc(cleanedNewPageName).set(dataConstruct)
+                        .then(function() {
+                            setMessage(`Document successfully written! Link: /${cleanedNewPageName}`);
+                            setUsedCreate(true);
+                            history.go(0);
+                        })
+                        .catch(function(error) {
+                            setError("Error writing document: " + error);
+                        });
+    
+    
+                    }).catch(function(err) {
+                        setError("Error writing name of page under users collection: " + err);
+                    })
+    
                 }
             });
 
-            if(!isDuplicate) {
-                
-                database.collection("users").doc(currentUser.uid).set({
-                    pages: [cleanedNewPageName]
-                })
-                .then(function() {
-
-                    let dataConstruct = {
-                        user_id: currentUser.uid,
-                        data: {
-                            biography: '',
-                            name: ''
-                        },
-                        images: {
-                            background: '',
-                            profile: ''
-                        },
-                        socials: [],
-                        websites: []
-                    };
-
-                    database.collection("pages").doc(cleanedNewPageName).set(dataConstruct)
-                    .then(function() {
-                        setMessage(`Document successfully written! Link: /${cleanedNewPageName}`);
-                        setUsedCreate(true);
-                        history.go(0);
-                    })
-                    .catch(function(error) {
-                        setError("Error writing document: " + error);
-                    });
-
-
-                }).catch(function(err) {
-                    setError("Error writing name of page under users collection: " + err);
-                })
-
-
-            } else {
-                setError('Error creating - Name already exists');
-            }
         } else {
             setError('Error creating - already have a page or need to fill in name!')
         }
@@ -227,7 +217,7 @@ export default function Preview() {
                             </div>
                             <h3>Your URL will look like this:</h3>
                             <div className='setup-input-demo'>
-                                internetspace.co/{newPageName.replace(/ /g, '-').replace(/#|@|\/|\.|\\|!|~|\||\+|\?|\^|&|\*|\(|\)|<|>|\{|\}|`/g, '')}
+                                internetspace.co/{newPageName.replace(/ /g, '-').replace(/#|@|\/|\.|\\|!|~|\||\+|\?|\^|&|\*|\(|\)|<|>|\{|\}|`|;/g, '').substring(0, 20)}
                             </div>
                             <input type="submit" disabled={usedCreate} value="Create Page" onClick={handleSetup} />
                         </div>
