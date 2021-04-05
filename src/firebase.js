@@ -3,14 +3,14 @@ import "firebase/auth";
 import "firebase/firestore";
 
 const app = firebase.initializeApp({ // TODO: switch them out with 'process.env.[name]'
-    apiKey: "AIzaSyD5kzg_4fNCKnaxS9Kv_ZbsaH1KWm7CGBk",
-    authDomain: "cahsmun-campus.firebaseapp.com",
-    projectId: "cahsmun-campus",
-    databaseURL: "https://cahsmun-campus.firebaseio.com",
-    storageBucket: "cahsmun-campus.appspot.com",
-    messagingSenderId: "512144577251",
-    appId: "1:512144577251:web:a087efbab3d5b514d16bd6",
-    measurementId: "G-P9GZ9CZFHT"
+    apiKey: "AIzaSyAbkv-ckg9v3TfRznyPkxSDkg0j2TAPfRM",
+    authDomain: "internetspaceco.firebaseapp.com",
+    projectId: "internetspaceco",
+    databaseURL: "https://internetspaceco.firebaseio.com",
+    storageBucket: "internetspaceco.appspot.com",
+    messagingSenderId: "593628122860",
+    appId: "1:593628122860:web:e812cb80b49902fa419fc9",
+    measurementId: "G-TZFQ95PN31"
 });
 
 export const auth = app.auth();
