@@ -213,7 +213,7 @@ export default function Preview() {
                                 Set your URL. Make sure you like it-you can't change it after!
                             </p>
                             <div className='setup-input'>
-                                internetspace.co/<input value={newPageName} onChange={e=>setNewPageName(e.target.value)} type="text" />
+                                internetspace.co/<input value={newPageName} onChange={e=>setNewPageName(e.target.value.toLowerCase())} type="text" />
                             </div>
                             <h3>Your URL will look like this:</h3>
                             <div className='setup-input-demo'>
