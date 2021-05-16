@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
 import { database } from './firebase';
+import { v4 as uuidv4 } from 'uuid';
 
 import InstagramIcon from './icons/instagram.svg';
 import GithubIcon from './icons/github.svg';
@@ -15,34 +16,71 @@ import GitlabIcon from './icons/gitlab.svg';
 import LinkedinIcon from './icons/linkedin.svg';
 import TrelloIcon from './icons/trello.svg';
 import YoutubeIcon from './icons/youtube.svg';
+import WebsiteItem from './components/WebsiteItem';
+import WebsiteLink from './components/WebsiteLink';
 
 const Editor = (props) => {
 
     const { currentUser } = useAuth();
 
+    // WYSIWYG
     const [name, updateName] = useState('');
     const [bio, updateBio] = useState('');
-
-    const [websites, updateWebsites] = useState([]); // {img: 'img url', name: 'link name', link: '',}
-    const [socials, updateSocials] = useState([]);
-
     const [pfpURL, updatePfpURL] = useState('');
     const [bgpURL, updateBgpURL] = useState('');
+
+    // For display purpose only
+    const [displayWebsites, setDisplayWebsites] = useState();
+    const [displaySocials, setDisplaySocials] = useState();
+    const [displayEditWebsites, setDisplayEditWebsites] = useState();
+    const [trigger, setTrigger] = useState(false);
+
+    // For data payload
+    const [websites, updateWebsites] = useState([]); 
+    const [socials, updateSocials] = useState([]);
+
+    // Only for input management purposes
+    const [classicMode, setClassicMode] = useState('');
+    const [textAlign, setTextAlign] = useState('');
+    const [shadow, setShadow] = useState('');
+    const [colourBackground, setColourBackground] = useState('#FFFFFF');
+    const [colourPrimary, setColourPrimary] = useState('#FFFFFF');
+    const [colourSecondary, setColourSecondary] = useState('#FFFFFF');
+
+
+    /*
+        Payload objects:
+
+        websites = {
+            [ID]: {
+                title: string,
+                url: string
+            },
+            ...
+        }
+
+        socials = {
+            [ID]: {
+                type: string,
+                url: string
+            },
+            ...
+        }
+
+        (Created right before sending DB request)
+        options = {
+            classic: true/false,
+            align: string (left/centre/right),
+            shadow: true/false,
+            colour_bg: string (#XXXXXX), // entire page background colour
+            colour_primary: string (#XXXXXX), // text colour
+            colour_secondary: string (#XXXXXX), // sub-text/link colour
+        }
+    */
 
     const [unsavedChangesInfo, setUnsavedChangesInfo] = useState(false);
     const [buttonDisable, setButtonDisable] = useState(false);
 
-    // const to manage adding social icons (messy... unoptimized.... :( )
-    const [displaySocialOne, updateDisplaySocialOne] = useState(true);
-    const [socialOne, updateSocialOne] = useState('');
-    const [displaySocialTwo, updateDisplaySocialTwo] = useState(false);
-    const [socialTwo, updateSocialTwo] = useState('');
-    const [displaySocialThree, updateDisplaySocialThree] = useState(false);
-    const [socialThree, updateSocialThree] = useState('');
-    const [displaySocialFour, updateDisplaySocialFour] = useState(false);
-    const [socialFour, updateSocialFour] = useState('');
-    const [displaySocialFive, updateDisplaySocialFive] = useState(false);
-    const [socialFive, updateSocialFive] = useState('');
 
     const returnSocialType = (link) => {
         if (link.indexOf('instagram') > -1) {
@@ -75,92 +113,10 @@ const Editor = (props) => {
     }
 
     useEffect(() => {
-        if(socialOne) {
-            updateDisplaySocialOne(true);
-        }
-        if((socialOne) || (socialTwo)) {
-            updateDisplaySocialTwo(true);
-        } else if (!(socialOne)) {
-            updateDisplaySocialTwo(false);
-        }
-        if((socialTwo) || (socialThree)) {
-            updateDisplaySocialThree(true);
-        } else if (!(socialTwo)) {
-            updateDisplaySocialThree(false);
-        }
-        if((socialThree) || socialFour) {
-            updateDisplaySocialFour(true);
-        } else if (!(socialThree)) {
-            updateDisplaySocialFour(false);
-        }
-        if((socialFour) || socialFive) {
-            updateDisplaySocialFive(true);
-        } else if (!(socialFour)) {
-            updateDisplaySocialFive(false);
-        }
-    }, [socialOne, socialTwo, socialThree, socialFour, socialFive]);
 
-    useEffect(() => {
-        let type = returnSocialType(socialOne);
-        let link = socialOne;
-        let array = socials;
-        array[0] = {
-            type: type,
-            link: link,
-            // actualLink for emails
-        }
-        updateSocials(array);
-    }, [socialOne, socials]);
-    
-    useEffect(() => {
-        let type = returnSocialType(socialTwo);
-        let link = socialTwo;
-        let array = socials;
-        array[1] = {
-            type: type,
-            link: link,
-        }
-        updateSocials(array);
-    }, [socialTwo, socials])
-    
-    useEffect(() => {
-        let type = returnSocialType(socialThree);
-        let link = socialThree;
-        let array = socials;
-        array[2] = {
-            type: type,
-            link: link,
-        }
-        updateSocials(array);
-    }, [socialThree, socials])
-    
-    useEffect(() => {
-        let type = returnSocialType(socialFour);
-        let link = socialFour;
-        let array = socials;
-        array[3] = {
-            type: type,
-            link: link,
-        }
-        updateSocials(array);
-    }, [socialFour, socials])
-    
-    useEffect(() => {
-        let type = returnSocialType(socialFive);
-        let link = socialFive;
-        let array = socials;
-        array[4] = {
-            type: type,
-            link: link,
-        }
-        updateSocials(array);
-    }, [socialFive, socials])
-
-
-    const displaySocials = () => {
         let returnData = [];
 
-        socials.forEach((item) => {
+        for (let item in socials) {
             let icon = '';
 
             switch(item.type) {
@@ -206,158 +162,18 @@ const Editor = (props) => {
 
             if (icon) {
                 returnData.push(
-                    <a target="_blank" rel="noreferrer" href={`${item.link}`} className={`icon ${item.type}`}>
+                    <a target="_blank" rel="noreferrer" href={`${item.url}`} className={`icon ${item.type}`}>
                         <img src={icon} alt={item.type} />
                     </a>
                 );
             }
-        });
-
-        return returnData;
-    }
-
-    const [displayWebsiteOne, updateDisplayWebsiteOne] = useState(true);
-    const [websiteOneName, updateWebsiteOneName] = useState('');
-    const [websiteOneLink, updateWebsiteOneLink] = useState('');
-    
-    const [displayWebsiteTwo, updateDisplayWebsiteTwo] = useState(false);
-    const [websiteTwoName, updateWebsiteTwoName] = useState('');
-    const [websiteTwoLink, updateWebsiteTwoLink] = useState('');
-    
-    const [displayWebsiteThree, updateDisplayWebsiteThree] = useState(false);
-    const [websiteThreeName, updateWebsiteThreeName] = useState('');
-    const [websiteThreeLink, updateWebsiteThreeLink] = useState('');
-    
-    const [displayWebsiteFour, updateDisplayWebsiteFour] = useState(false);
-    const [websiteFourName, updateWebsiteFourName] = useState('');
-    const [websiteFourLink, updateWebsiteFourLink] = useState('');
-    
-    const [displayWebsiteFive, updateDisplayWebsiteFive] = useState(false);
-    const [websiteFiveName, updateWebsiteFiveName] = useState('');
-    const [websiteFiveLink, updateWebsiteFiveLink] = useState('');
-
-    useEffect(() => {
-        if((websiteOneLink && websiteOneName) || (websiteTwoName) || (websiteTwoLink)) {
-            updateDisplayWebsiteTwo(true);
-        } else if (!(websiteTwoLink || websiteTwoName)) {
-            updateDisplayWebsiteTwo(false);
         }
-        if((websiteTwoLink && websiteTwoName) || websiteThreeName || websiteThreeLink) {
-            updateDisplayWebsiteThree(true);
-        } else if (!(websiteThreeLink || websiteThreeName)) {
-            updateDisplayWebsiteThree(false);
-        }
-        if((websiteThreeLink && websiteThreeName) || websiteFourName || websiteFourLink) {
-            updateDisplayWebsiteFour(true);
-        } else if (!(websiteFourLink || websiteFourName)) {
-            updateDisplayWebsiteFour(false);
-        }
-        if((websiteFourLink && websiteFourName) || websiteFiveName || websiteFiveLink) {
-            updateDisplayWebsiteFive(true);
-        } else if (!(websiteFiveLink || websiteFiveName)) {
-            updateDisplayWebsiteFive(false);
-        }
-    }, [websiteOneName, websiteOneLink, websiteTwoName, websiteTwoLink, websiteThreeName, websiteThreeLink, websiteFourName, websiteFourLink, websiteFiveName, websiteFiveLink]);
 
-    useEffect(() => {
-        let name = websiteOneName;
-        let link = websiteOneLink;
-        let array = websites;
-        array[0] = {
-            img: '',
-            name: name,
-            link: link,
-        }
-        updateWebsites(array);
-    }, [websiteOneName, websiteOneLink, websites]);
-    
-    useEffect(() => {
-        let name = websiteTwoName;
-        let link = websiteTwoLink;
-        let array = websites;
-        array[1] = {
-            img: '',
-            name: name,
-            link: link,
-        }
-        updateWebsites(array);
-    }, [websiteTwoName, websiteTwoLink, websites])
-    
-    useEffect(() => {
-        let name = websiteThreeName;
-        let link = websiteThreeLink;
-        let array = websites;
-        array[2] = {
-            img: '',
-            name: name,
-            link: link,
-        }
-        updateWebsites(array);
-    }, [websiteThreeName, websiteThreeLink, websites])
-    
-    useEffect(() => {
-        let name = websiteFourName;
-        let link = websiteFourLink;
-        let array = websites;
-        array[3] = {
-            img: '',
-            name: name,
-            link: link,
-        }
-        updateWebsites(array);
-    }, [websiteFourName, websiteFourLink, websites])
-    
-    useEffect(() => {
-        let name = websiteFiveName;
-        let link = websiteFiveLink;
-        let array = websites;
-        array[4] = {
-            img: '',
-            name: name,
-            link: link,
-        }
-        updateWebsites(array);
-    }, [websiteFiveLink, websiteFiveName, websites])
+        setDisplaySocials(returnData);
+    }, [ socials, trigger ]);
 
-    const displayWebsite = () => {
-        let returnData = [];
 
-        websites.forEach((item) => {
-            if(item.name && item.link) {
-                returnData.push(
-                    <a target="_blank" rel="noreferrer" className='link-item' href={`${item.link}`}>
-                        {/* <img className='link-image' src={} /> /* perhaps send opengraph req */}
-                        {/* <div className='link-img'>{item.img}</div> */}
-                        <div className='link-content'>
-                            <div className='link-text'>{item.name}</div>
-                            <div className='link-url'>{item.link}</div>
-                        </div>
-                    </a>
-                );
-            }
-        })
-
-        return returnData;
-    }
-
-    // loadin everything, setting initials
-
-    const [initialWebOneName, setInitialWebOneName] = useState('');
-    const [initialWebOneLink, setInitialWebOneLink] = useState('');
-    const [initialWebTwoName, setInitialWebTwoName] = useState('');
-    const [initialWebTwoLink, setInitialWebTwoLink] = useState('');
-    const [initialWebThreeName, setInitialWebThreeName] = useState('');
-    const [initialWebThreeLink, setInitialWebThreeLink] = useState('');
-    const [initialWebFourName, setInitialWebFourName] = useState('');
-    const [initialWebFourLink, setInitialWebFourLink] = useState('');
-    const [initialWebFiveName, setInitialWebFiveName] = useState('');
-    const [initialWebFiveLink, setInitialWebFiveLink] = useState('');
-
-    const [initialSocialOne, setInitialSocialOne] = useState('');
-    const [initialSocialTwo, setInitialSocialTwo] = useState('');
-    const [initialSocialThree, setInitialSocialThree] = useState('');
-    const [initialSocialFour, setInitialSocialFour] = useState('');
-    const [initialSocialFive, setInitialSocialFive] = useState('');
+    // load data
 
     useEffect(() => {
         if(props.loaded) {
@@ -365,50 +181,12 @@ const Editor = (props) => {
             updateName(props.recentState.data.name ? props.recentState.data.name : '');
             updateBio(props.recentState.data.biography ? props.recentState.data.biography : '');
 
-            updateSocials(props.recentState.socials ? props.recentState.socials : []);
-            updateWebsites(props.recentState.websites ? props.recentState.websites : []);
-
+            updateSocials(props.recentState.socialsData ? props.recentState.socialsData : {});
+            updateWebsites(props.recentState.websitesData ? props.recentState.websitesData : {});
 
             updatePfpURL(props.recentState.images.profile ? props.recentState.images.profile : '');
             updateBgpURL(props.recentState.images.background ? props.recentState.images.background : '');
-
-
-            updateSocialOne(props.recentState.socials[0] ? props.recentState.socials[0].link : '');
-            setInitialSocialOne(props.recentState.socials[0] ? props.recentState.socials[0].link : '');
-            updateSocialTwo(props.recentState.socials[1] ? props.recentState.socials[1].link : '');
-            setInitialSocialTwo(props.recentState.socials[1] ? props.recentState.socials[1].link : '');
-            updateSocialThree(props.recentState.socials[2] ? props.recentState.socials[2].link : '');
-            setInitialSocialThree(props.recentState.socials[2] ? props.recentState.socials[2].link : '');
-            updateSocialFour(props.recentState.socials[3] ? props.recentState.socials[3].link : '');
-            setInitialSocialFour(props.recentState.socials[3] ? props.recentState.socials[3].link : '');
-            updateSocialFive(props.recentState.socials[4] ? props.recentState.socials[4].link : '');
-            setInitialSocialFive(props.recentState.socials[4] ? props.recentState.socials[4].link : '');
             
-
-            updateWebsiteOneName(props.recentState.websites[0] ? props.recentState.websites[0].name : '');
-            updateWebsiteOneLink(props.recentState.websites[0] ? props.recentState.websites[0].link : '');
-            setInitialWebOneName(props.recentState.websites[0] ? props.recentState.websites[0].name : '');
-            setInitialWebOneLink(props.recentState.websites[0] ? props.recentState.websites[0].link : '');
-
-            updateWebsiteTwoName(props.recentState.websites[1] ? props.recentState.websites[1].name : '');
-            updateWebsiteTwoLink(props.recentState.websites[1] ? props.recentState.websites[1].link : '');
-            setInitialWebTwoName(props.recentState.websites[1] ? props.recentState.websites[1].name : '');
-            setInitialWebTwoLink(props.recentState.websites[1] ? props.recentState.websites[1].link : '');
-
-            updateWebsiteThreeName(props.recentState.websites[2] ? props.recentState.websites[2].name : '');
-            updateWebsiteThreeLink(props.recentState.websites[2] ? props.recentState.websites[2].link : '');
-            setInitialWebThreeName(props.recentState.websites[2] ? props.recentState.websites[2].name : '');
-            setInitialWebThreeLink(props.recentState.websites[2] ? props.recentState.websites[2].link : '');
-
-            updateWebsiteFourName(props.recentState.websites[3] ? props.recentState.websites[3].name : '');
-            updateWebsiteFourLink(props.recentState.websites[3] ? props.recentState.websites[3].link : '');
-            setInitialWebFourName(props.recentState.websites[3] ? props.recentState.websites[3].name : '');
-            setInitialWebFourLink(props.recentState.websites[3] ? props.recentState.websites[3].link : '');
-
-            updateWebsiteFiveName(props.recentState.websites[4] ? props.recentState.websites[4].name : '');
-            updateWebsiteFiveLink(props.recentState.websites[4] ? props.recentState.websites[4].link : '');
-            setInitialWebFiveName(props.recentState.websites[4] ? props.recentState.websites[4].name : '');
-            setInitialWebFiveLink(props.recentState.websites[4] ? props.recentState.websites[4].link : '');
         }
     }, [props]);
 
@@ -428,27 +206,8 @@ const Editor = (props) => {
     }, [props, name, bio, pfpURL, bgpURL]);
 
     const seeChanged = () => {
-        if(props.loaded) {
-            if(
-                (initialWebOneName !== websiteOneName) ||
-                (initialWebOneLink !== websiteOneLink) ||
-                (initialWebTwoName !== websiteTwoName) ||
-                (initialWebTwoLink !== websiteTwoLink) ||
-                (initialWebThreeName !== websiteThreeName) ||
-                (initialWebThreeLink !== websiteThreeLink) ||
-                (initialWebFourName !== websiteFourName) ||
-                (initialWebFourLink !== websiteFourLink) ||
-                (initialWebFiveName !== websiteFiveName) ||
-                (initialWebFiveLink !== websiteFiveLink) ||
-                (initialSocialOne !== socialOne) ||
-                (initialSocialTwo !== socialTwo) ||
-                (initialSocialThree !== socialThree) ||
-                (initialSocialFour !== socialFour) ||
-                (initialSocialFive !== socialFive)
-            ) {
-                 return true;
-            }
-            return false;
+        if(true) {
+            return true;
         }
         return false;
     }
@@ -470,7 +229,15 @@ const Editor = (props) => {
                 profile: pfpURL
             },
             socials: socials,
-            websites: websites
+            websites: websites,
+            options: {
+                classic: classicMode,
+                align: textAlign,
+                shadow: shadow,
+                colour_bg: colourBackground,
+                colour_primary: colourPrimary,
+                colour_secondary: colourSecondary
+            },
         };
 
         database.collection("pages").doc(props.pageURL).update(dataConstruct)
@@ -489,6 +256,75 @@ const Editor = (props) => {
         });
     }
 
+
+
+    const addWebsite = () => {
+        let uuid = uuidv4();
+
+        let newWebsites = ({
+            ...websites,
+            [uuid]: {
+                title: '',
+                url: '',
+            }
+        });
+        updateWebsites(newWebsites);
+        setTrigger(trigger ? false : true);
+    }
+
+    const getWebsiteTitle = (id) => {
+        return websites[id].title;
+    }
+
+    const setWebsiteTitle = (value, id) => {
+        let newWebsites = websites;
+        newWebsites[id].title = value;
+
+        updateWebsites(newWebsites);
+        setTrigger(trigger ? false : true);
+    }
+
+    const getWebsiteUrl = (id) => {
+        return websites[id].url;
+    }
+
+    const setWebsiteUrl = (value, id) => {
+        let newWebsites = websites;
+        newWebsites[id].url = value;
+
+        updateWebsites(newWebsites);
+        setTrigger(trigger ? false : true);
+    }
+
+    // display websites information
+    useEffect(() => {
+        let returnData = [];
+        let returnDisplayData = [];
+
+        for (let item in websites) {
+            returnData.push(
+                <WebsiteItem
+                    key={item}
+                    id={item}
+                    title={getWebsiteTitle}
+                    url={getWebsiteUrl}
+                    setTitle={setWebsiteTitle}
+                    setUrl={setWebsiteUrl} />
+            );
+            returnDisplayData.push(
+                <WebsiteLink
+                    key={item}
+                    id={item}
+                    url={getWebsiteUrl}
+                    title={getWebsiteTitle} />
+            );
+        }
+
+        setDisplayEditWebsites(returnData);
+        setDisplayWebsites(returnDisplayData);
+    }, [websites, trigger]);
+
+
     return (
                 <div className='demo-container'>
                     <div className={`profile-container ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}>
@@ -502,10 +338,10 @@ const Editor = (props) => {
                                 <p>{bio}</p>
                             </div>
                             <div className='socials'>
-                                {socials && displaySocials()}
+                                {displaySocials}
                             </div>
                             <div className='links'>
-                                {websites && displayWebsite()}
+                                {displayWebsites}
                             </div>
                         </div>
                     </div>
@@ -539,102 +375,51 @@ const Editor = (props) => {
                                 Make sure to write 'http://' in front of all links!
                             </p>
                             <div className='input-box social'>
-                                {displaySocialOne && (
+                                
+                                
                                     <div className='add-social'>
                                         <h5>Link: </h5>
-                                        <input type="text" value={socialOne} onChange={e=>updateSocialOne(e.target.value)} />
+                                        <input type="text" /* value={} onChange={e=>} */ />
                                     </div>
-                                )}
-                                {displaySocialTwo && (
-                                    <div className='add-social'>
-                                        <h5>Link: </h5>
-                                        <input type="text" value={socialTwo} onChange={e=>updateSocialTwo(e.target.value)} />
-                                    </div>
-                                )}
-                                {displaySocialThree && (
-                                    <div className='add-social'>
-                                        <h5>Link: </h5>
-                                        <input type="text" value={socialThree} onChange={e=>updateSocialThree(e.target.value)} />
-                                    </div>
-                                )}
-                                {displaySocialFour && (
-                                    <div className='add-social'>
-                                        <h5>Link: </h5>
-                                        <input type="text" value={socialFour} onChange={e=>updateSocialFour(e.target.value)} />
-                                    </div>
-                                )}
-                                {displaySocialFive && (
-                                    <div className='add-social'>
-                                        <h5>Link: </h5>
-                                        <input type="text" value={socialFive} onChange={e=>updateSocialFive(e.target.value)} />
-                                    </div>
-                                )}
                             </div>
                         </div>
                         <div className='input-section'>
                             <h4>Websites</h4>
                             <div className='input-box websites'>
-                                {displayWebsiteOne && (
-                                    <div className='input-row'>
-                                        <div className='website-name'>
-                                            Title: 
-                                            <input type="text" value={websiteOneName} onChange={e=>updateWebsiteOneName(e.target.value)} />
-                                        </div>
-                                        <div className='website-link'>
-                                            Link: 
-                                            <input type="text" value={websiteOneLink} onChange={e=>updateWebsiteOneLink(e.target.value)} />
-                                        </div>
-                                    </div>
-                                )}
-                                {displayWebsiteTwo && (
-                                    <div className='input-row'>
-                                        <div className='website-name'>
-                                            Title: 
-                                            <input type="text" value={websiteTwoName} onChange={e=>updateWebsiteTwoName(e.target.value)} />
-                                        </div>
-                                        <div className='website-link'>
-                                            Link: 
-                                            <input type="text" value={websiteTwoLink} onChange={e=>updateWebsiteTwoLink(e.target.value)} />
-                                        </div>
-                                    </div>
-                                )}
-                                {displayWebsiteThree && (
-                                    <div className='input-row'>
-                                        <div className='website-name'>
-                                            Title: 
-                                            <input type="text" value={websiteThreeName} onChange={e=>updateWebsiteThreeName(e.target.value)} />
-                                        </div>
-                                        <div className='website-link'>
-                                            Link: 
-                                            <input type="text" value={websiteThreeLink} onChange={e=>updateWebsiteThreeLink(e.target.value)} />
-                                        </div>
-                                    </div>
-                                )}
-                                {displayWebsiteFour && (
-                                    <div className='input-row'>
-                                        <div className='website-name'>
-                                            Title: 
-                                            <input type="text" value={websiteFourName} onChange={e=>updateWebsiteFourName(e.target.value)} />
-                                        </div>
-                                        <div className='website-link'>
-                                            Link: 
-                                            <input type="text" value={websiteFourLink} onChange={e=>updateWebsiteFourLink(e.target.value)} />
-                                        </div>
-                                    </div>
-                                )}
-                                {displayWebsiteFive && (
-                                    <div className='input-row'>
-                                        <div className='website-name'>
-                                            Title: 
-                                            <input type="text" value={websiteFiveName} onChange={e=>updateWebsiteFiveName(e.target.value)} />
-                                        </div>
-                                        <div className='website-link'>
-                                            Link: 
-                                            <input type="text" value={websiteFiveLink} onChange={e=>updateWebsiteFiveLink(e.target.value)} />
-                                        </div>
-                                    </div>
-                                )}
+                                {displayEditWebsites}
+                                <div onClick={addWebsite}>
+                                    Add Website
+                                </div>
                             </div>
+                        </div>
+                        <div className='input-section options'>
+                            <h4>Options</h4>
+                            <h5>Classic Mode</h5>
+                            <div className={`toggle-container ${classicMode}`} onClick={e=>setClassicMode(classicMode ? false : true)}>
+                                <div className='toggle-nob'></div>
+                            </div>
+
+                            <h5>Drop Shadow</h5>
+                            <div className={`toggle-container ${shadow}`} onClick={e=>setShadow(shadow ? false : true)}>
+                                <div className='toggle-nob'></div>
+                            </div>
+
+                            <h5>Text Align</h5>
+                            <div>
+
+                            </div>
+
+                            <h5>Background Colour</h5>
+                            <input type="color" id="background" name="background" value={colourBackground} onChange={e=>setColourBackground(e.target.value)} />
+                            {colourBackground}
+                            
+                            <h5>Primary Colour</h5>
+                            <input type="color" id="primary" name="primary" value={colourPrimary} onChange={e=>setColourPrimary(e.target.value)} />
+                            {colourPrimary}
+
+                            <h5>Secondary Colour</h5>
+                            <input type="color" id="secondary" name="secondary" value={colourSecondary} onChange={e=>setColourSecondary(e.target.value)} />
+                            {colourSecondary}
                         </div>
                         {(unsavedChangesInfo || seeChanged()) && (
                             <div className='save-change'>

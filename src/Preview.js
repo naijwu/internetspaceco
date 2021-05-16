@@ -102,8 +102,8 @@ export default function Preview() {
                                 background: '',
                                 profile: ''
                             },
-                            socials: [],
-                            websites: []
+                            socialsData: {},
+                            websitesData: {}
                         };
     
                         database.collection("pages").doc(cleanedNewPageName).set(dataConstruct)

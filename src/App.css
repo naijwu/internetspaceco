@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:wght@400;600&display=swap|Inter:wght@500;600&display=swap');
 
 
 @font-face {
@@ -109,6 +109,10 @@ header {
   box-shadow:0 0 10px rgba(0,0,0,0.02);
 }
 
+.profile-container .info h3 {
+  padding-bottom:13px;
+}
+
 .profile-container.pf-alone .info h3 {
   padding:5px 0 10px 0;
 }
@@ -178,6 +182,8 @@ header {
 
 .profile .socials .icon.facebook {
   background:#1B76F2;
+} .profile .socials .icon.linkedin {
+  background: #0A66C2;
 } .profile .socials .icon.instagram {
   background:linear-gradient(to top right, #FEDA75, #FA7E1E, #D62976, #962FBF, #4F5BD5)
 } .profile .socials .icon.twitter {
@@ -186,6 +192,8 @@ header {
   background:#9146FF;
 } .profile .socials .icon.youtube {
   background:#FF0000;
+}.profile .socials .icon.github {
+  background:#24292E;
 }
 
 .profile .socials .icon img {
@@ -324,6 +332,43 @@ input[type="text"]:focus {
   font-size:16px;
   padding-right:10px;
 }
+
+
+/* Toggle Styles */
+.toggle-container {
+  width:55px;
+  height:30px;
+  background:#EEE;
+  border-radius:20px;
+  box-sizing: border-box;
+  padding:4px;
+  cursor:pointer;
+  transition:0.2s all;
+}
+
+.toggle-container .toggle-nob {
+  height:22px;
+  width:22px;
+  border-radius:100%;
+  background:#777;
+}
+
+/* Toggle is set to false */
+.toggle-container.false {
+  padding-left:4px;
+}
+.toggle-container.false .toggle-nob { 
+  background:red;
+}
+
+/* Toggle is set to true */
+.toggle-container.true {
+  padding-left:calc(55px - 26px);
+}
+.toggle-container.true .toggle-nob {
+  background:green;
+}
+
 
 .button,
 input[type="submit"] {
@@ -666,7 +711,7 @@ input[type="submit"]:disabled {
 }
 
 a.profile-footer-link {
-  font-weight:bold;
+  font-weight:medium;
   opacity:0.2;
   color:black;
   text-decoration: none;

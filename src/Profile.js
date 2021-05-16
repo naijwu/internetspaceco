@@ -172,9 +172,6 @@ export default function Profile() {
                     </div>
                 </div>
             </div>
-            <a className='profile-footer-link' href="http://internetspace.co/">
-                internetspace🌌co
-            </a>
         </>
     );
 }
