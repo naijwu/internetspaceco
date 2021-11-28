@@ -4,6 +4,10 @@ import { useAuth } from './contexts/AuthContext';
 import Editor from './Editor';
 import { database } from './firebase';
 
+const LogoutIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-log-out"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+)
+
 export default function Preview() {
     const [error, setError] = useState('');
     const [message, setMessage] = useState('');
@@ -140,54 +144,6 @@ export default function Preview() {
         }
     }
 
-    const [loading, setLoading] = useState(false);
-    const [confirming, setConfirming] = useState(false);
-    const [displayConfirm, setDisplayConfirm] = useState(false);
-    const [pageDeleteError, setPageDeleteError] = useState('');
-
-    function showDeleteConfirm() {
-        setDisplayConfirm(true);
-        setConfirming(true);
-    }
-
-    function hideDeleteConfirm() {
-        setDisplayConfirm(false);
-        setConfirming(false);
-    }
-
-    async function handleDeletePage() {
-        setLoading(true);
-
-        // check if there even is a page to delete & user to delete from
-        if(pages.pages && currentUser) {
-
-            // first: delete the page document under 'pages' collection
-            // second: delete the profile URL (page's URL) under 'users' collection, under user id's collection
-
-            database.collection("pages").doc(pages.pages[0]).delete()
-            .then(function() {
-
-                database.collection("users").doc(currentUser.uid).set({
-                    pages: [],
-                }).then(function() {
-                    // both delete success - time to party
-
-                    setLoading(false);
-                    history.go(0);
-                }).catch(function(err) {
-                    setPageDeleteError('Error resetting pages array under users collection: ' + err);
-        
-                    setLoading(false);
-                })
-            })
-            .catch(function(error) {
-                setPageDeleteError('Error deleting page under pages collection: ' + error);
-    
-                setLoading(false);
-            });
-        }
-    }
-
     return (
         <div className='preview'>
             {(needSetup) && (
@@ -231,54 +187,25 @@ export default function Preview() {
                         <Editor
                             loaded={pageDataLoaded}
                             pageURL={pages.pages ? pages.pages[0] : ''}
-                            recentState={pageData} />
-                    </div>
-                    <div className='main'>
-                        <div className='account-bar'>
-                            Logged In as {currentUser.email}
-                        </div>
-                        <div className='main-inner'>
-                            <h3>Your page:</h3>
-                            <a className='text-link' target="_blank" rel="noreferrer" href={`http://internetspace.co/${pages.pages}`}>
-                                internetspace.co/{pages.pages}
-                            </a>
-                        </div>
+                            recentState={pageData}
+                            
+                            // "logged in as..."
+                            email={currentUser.email}
+                            pages={pages} />
                     </div>
                 </>
             )}
 
-            <div className='actions'>
-                <h4>Account Actions</h4>
-                <div className='button-tray'>
-                    {/* <Link className='button' to='/app/update'>
-                        Edit Profile
-                    </Link> */}
-                    <Link className='button red' onClick={handleLogout}>
-                        Log out
-                    </Link>
-                </div>
+            <div className='sidebar'>
+                <h1 style={{ userSelect:"none" }}>🌌</h1>
+                
+                {/* <Link className='button' to='/app/update'>
+                    Edit Profile
+                </Link> */}
+                <Link className='circle-button' onClick={handleLogout}>
+                    <LogoutIcon />
+                </Link>
             </div>
-
-            {((!needSetup) && (!needPreSetup)) && (
-                <div className='page-actions'>
-                    <h4>Page Actions</h4>
-                    <div className='delete-container'>
-                        <button disabled={loading} className={`button red deletepage dp${confirming}`} onClick={(confirming) ? hideDeleteConfirm : showDeleteConfirm}>
-                            {(confirming) ? 'Cancel' : 'Delete Page'}
-                        </button>
-                        {(displayConfirm) && (
-                            <button disabled={loading} className='page-delete-confirm' onClick={handleDeletePage}>
-                                Confirm and Delete
-                            </button>
-                        )}
-                        {(pageDeleteError) && (
-                            <div className='page-delete-error'>
-                                {pageDeleteError}
-                            </div>
-                        )}
-                    </div>
-                </div>
-            )}
         </div>
     )
 }

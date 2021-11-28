@@ -1,19 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { database } from './firebase';
-
-import InstagramIcon from './icons/instagram.svg';
-import GithubIcon from './icons/github.svg';
-import MailIcon from './icons/mail.svg';
-import FacebookIcon from './icons/facebook.svg';
-import TwitterIcon from './icons/twitter.svg';
-import TwitchIcon from './icons/twitch.svg';
-import CodepenIcon from './icons/codepen.svg';
-import FigmaIcon from './icons/figma.svg';
-import GitlabIcon from './icons/gitlab.svg';
-import LinkedinIcon from './icons/linkedin.svg';
-import TrelloIcon from './icons/trello.svg';
-import YoutubeIcon from './icons/youtube.svg';
+import SocialLink from './components/SocialLink';
+import WebsiteLink from './components/WebsiteLink';
 
 // TODO: Fix the issue that Firebase doesn't recognize :user_name
 // Immediate TODO: Fix up UI so I can actually navigate the site lol
@@ -33,6 +22,13 @@ export default function Profile() {
     const [pfpURL, setPfpURL] = useState('');
     const [bgpURL, setBgpURL] = useState('');
 
+    // OPTIONS baby
+    const [pageAlign, setPageAlign] = useState('');
+    const [colourBackground, setColourBackground] = useState('#FFFFFF');
+    const [colourContainer, setColourContainer] = useState('#FFFFFF');
+    const [colourBox, setColourBox] = useState('#FFFFFF');
+    const [colourText, setColourText] = useState('#000000');
+
     // print params to console
     console.log(params.user_name);
 
@@ -48,13 +44,17 @@ export default function Profile() {
                 setName(profileData.data.name ? profileData.data.name : '');
                 setBio(profileData.data.biography ? profileData.data.biography : '');
 
-                setSocials(profileData.socials ? profileData.socials : []);
-                setWebsites(profileData.websites ? profileData.websites : []);
+                setSocials(profileData.socialsData ? profileData.socialsData : {});
+                setWebsites(profileData.websitesData ? profileData.websitesData : {});
 
                 setPfpURL(profileData.images.profile ? profileData.images.profile : '');
                 setBgpURL(profileData.images.background ? profileData.images.background : '');
 
-                console.log(socials, websites)
+                setPageAlign(profileData.options.align ? profileData.options.align : '')
+                setColourBackground(profileData.options.colour_bg ? profileData.options.colour_bg : '')
+                setColourContainer(profileData.options.colour_container ? profileData.options.colour_container : '')
+                setColourBox(profileData.options.colour_box ? profileData.options.colour_box : '')
+                setColourText(profileData.options.colour_text ? profileData.options.colour_text : '')
             } else {
                 console.log("Something went wrong"); // TODO: Graphically show the errors
             }
@@ -68,58 +68,13 @@ export default function Profile() {
     const displaySocials = () => {
         let returnData = [];
 
-        socials.forEach((item) => {
-            let icon = '';
-
-            switch(item.type) {
-                case 'instagram':
-                    icon = InstagramIcon;
-                    break;
-                case 'github':
-                    icon = GithubIcon;
-                    break;
-                case 'email':
-                    icon = MailIcon;
-                    break;
-                case 'facebook':
-                    icon = FacebookIcon;
-                    break;
-                case 'twitter':
-                    icon = TwitterIcon;
-                    break;
-                case 'twitch':
-                    icon = TwitchIcon;
-                    break;
-                case 'codepen':
-                    icon = CodepenIcon;
-                    break;
-                case 'figma':
-                    icon = FigmaIcon;
-                    break;
-                case 'gitlab':
-                    icon = GitlabIcon;
-                    break;
-                case 'linkedin':
-                    icon = LinkedinIcon;
-                    break;
-                case 'trello':
-                    icon = TrelloIcon;
-                    break;
-                case 'youtube':
-                    icon = YoutubeIcon;
-                    break;
-                default:
-                    break;
-            }
-
-            if (icon) {
-                returnData.push(
-                    <a href={`${item.link}`} className={`icon ${item.type}`}>
-                        <img src={icon} alt={item.type} />
-                    </a>
-                );
-            }
-        });
+        for (let item in socials) {
+            returnData.push(
+                <SocialLink
+                    key={item}
+                    url={socials[item]} />
+            )
+        }
 
         return returnData;
     }
@@ -127,20 +82,19 @@ export default function Profile() {
     const displayWebsite = () => {
         let returnData = [];
 
-        websites.forEach((item) => {
-            if(item.name && item.link) {
+        for (let item in websites) {
+            if(websites[item].url && websites[item].title) {
                 returnData.push(
-                    <a className='link-item' href={`${item.link}`}>
-                        {/* <img className='link-image' src={} /> /* perhaps send opengraph req */}
-                        {/* <div className='link-img'>{item.img}</div> */}
-                        <div className='link-content'>
-                            <div className='link-text'>{item.name}</div>
-                            <div className='link-url'>{item.link}</div>
-                        </div>
-                    </a>
+                    <WebsiteLink
+                        colour={colourBox}
+                        key={item}
+                        id={item}
+                        url={websites[item].url}
+                        title={websites[item].title} />
                 );
+
             }
-        })
+        }
 
         return returnData;
     }
@@ -149,16 +103,19 @@ export default function Profile() {
     // TODO: Check if user is signed in; if signed in, check if UID matches UID of doc, if does, show option to edit 
 
     return (
-        <>
-            <div className={`profile-container ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}>
+        <div 
+          className={`profile-container-wrapper ${pageAlign} prod`} 
+          style={{ backgroundColor: colourBackground }}>
+            <div 
+              className={`profile-container ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}
+              style={{
+                background: bgpURL ? colourContainer : 'transparent',
+                color: colourText
+              }}>
                 <div className='profile'>
                     <div className='photos'>
-                        {(bgpURL) && (
-                            <img className='bgp' src={bgpURL} alt="background" />
-                        )}
-                        {(pfpURL) && (
-                            <img className='pfp' src={pfpURL} alt="profile" />
-                        )}
+                        <img className='bgp' src={bgpURL} alt="background" />
+                        <img className='pfp' src={pfpURL} alt="profile" />
                     </div>
                     <div className='info'>
                         <h3>{name}</h3>
@@ -172,6 +129,6 @@ export default function Profile() {
                     </div>
                 </div>
             </div>
-        </>
+        </div>
     );
 }
