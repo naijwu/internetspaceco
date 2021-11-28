@@ -11,4 +11,4 @@ a method of procrastination[^1]
 my bud kyu, internetspace.co's superfan :')
 
 
-[^1]: Built in the learning commons at my highschool when I should've been studying for econ
+[^1]: Always worked on whenever I have big exams coming up LMAO
