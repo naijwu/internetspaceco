@@ -1,20 +1,28 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { useAuth } from './contexts/AuthContext';
-import { database } from './firebase';
-import { v4 as uuidv4 } from 'uuid';
+import { database, uploadImageToStorage } from './firebase';
 import WebsiteItem from './components/WebsiteItem';
 import WebsiteLink from './components/WebsiteLink';
 import SocialItem from './components/SocialItem';
 import SocialLink from './components/SocialLink';
 
 const MoreIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-more-horizontal"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
 )
 
 const XIcon = () => (
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
 )
+
+const PlusIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-plus"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+)
+
+const DeleteIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="feather feather-trash"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+)
+
 
 const Editor = (props) => {
 
@@ -26,7 +34,13 @@ const Editor = (props) => {
     const [name, updateName] = useState('');
     const [bio, updateBio] = useState('');
     const [pfpURL, updatePfpURL] = useState('');
-    const [bgpURL, updateBgpURL] = useState('');
+    const [cpURL, updateCpURL] = useState(''); 
+    const [bgpURL, updateBgpURL] = useState(''); // TODO: convert to some image thing, URL 
+
+    // image BLOBs (for upload)
+    const [selectedPfp, setSelectedPfp] = useState();
+    const [selectedCp, setSelectedCp] = useState();
+    const [selectedBgp, setSelectedBgp] = useState();
 
     // For display purpose only
     const [displayWebsites, setDisplayWebsites] = useState();
@@ -40,13 +54,16 @@ const Editor = (props) => {
     const [socials, updateSocials] = useState([]);
 
     // Only for input management purposes
-    // const [classicMode, setClassicMode] = useState('');
-    // const [shadow, setShadow] = useState('');
     const [pageAlign, setPageAlign] = useState('');
+    const [outline, setOutline] = useState('');
+    const [outlineSlider, setOutlineSlider] = useState('');
+    const [cardOpacity, setCardOpacity] = useState(0);
+    const [cardBlur, setCardBlur] = useState(0);
     const [colourBackground, setColourBackground] = useState('#FFFFFF');
-    const [colourContainer, setColourContainer] = useState('#FFFFFF');
+    const [colourCard, setColourCard] = useState('#FFFFFF');
     const [colourBox, setColourBox] = useState('#FFFFFF');
     const [colourText, setColourText] = useState('#000000');
+
 
 
     /*
@@ -81,6 +98,19 @@ const Editor = (props) => {
 
     // load data
 
+    const initializeoutlineSliderr = (value) => {
+        // CONSTRAINT: value is a valid chooser value ("shadow", "", or "#XXXXXX")
+
+        if(value === "shadow") {
+            return "centre";
+        } else if(value === "") {
+            return "left"
+        } else {
+            // if hex
+            return "right"
+        }
+    }
+
     useEffect(() => {
         if(props.loaded) {
             setButtonDisable(false);
@@ -92,13 +122,19 @@ const Editor = (props) => {
             updateWebsites(props.recentState.websitesData ? props.recentState.websitesData : []);
 
             updatePfpURL(props.recentState.images.profile ? props.recentState.images.profile : '');
+            updateCpURL(props.recentState.images.cover ? props.recentState.images.cover : '');
             updateBgpURL(props.recentState.images.background ? props.recentState.images.background : '');
 
             setPageAlign(props.recentState.options.align ? props.recentState.options.align : '')
+            setOutline(props.recentState.options.outline ? props.recentState.options.outline : '')
+            setOutlineSlider(props.recentState.options.outline ? initializeoutlineSliderr(props.recentState.options.outline) : 'left');
             setColourBackground(props.recentState.options.colour_bg ? props.recentState.options.colour_bg : '')
-            setColourContainer(props.recentState.options.colour_container ? props.recentState.options.colour_container : '')
+            setCardOpacity(props.recentState.options.card_opacity ? props.recentState.options.card_opacity : '')
+            setCardBlur(props.recentState.options.card_blur ? props.recentState.options.card_blur : '')
+            setColourCard(props.recentState.options.colour_card ? props.recentState.options.colour_card : '')
             setColourBox(props.recentState.options.colour_box ? props.recentState.options.colour_box : '')
             setColourText(props.recentState.options.colour_text ? props.recentState.options.colour_text : '')
+
         }
     }, [props]);
 
@@ -108,14 +144,14 @@ const Editor = (props) => {
                 (props.recentState.data.name !== name) ||
                 (props.recentState.data.biography !== bio) ||
                 (props.recentState.images.profile !== pfpURL) ||
-                (props.recentState.images.background !== bgpURL)
+                (props.recentState.images.background !== cpURL)
             ) {
                 setUnsavedChangesInfo(true);
             } else {
                 setUnsavedChangesInfo(false);
             }
         }
-    }, [props, name, bio, pfpURL, bgpURL]);
+    }, [props, name, bio, pfpURL, cpURL]);
 
     const seeChanged = () => {
         if(true) {
@@ -126,10 +162,26 @@ const Editor = (props) => {
 
     const history = useHistory();
 
-    const updatePage = (e) => {
+    const updatePage = async (e) => {
         e.preventDefault();
 
         setButtonDisable(true);
+
+        // upload code
+        let pfpUploadURL = null;
+        let cpUploadURL = null;
+        let bgpUploadURL = null;
+        
+        if(selectedPfp) {
+            pfpUploadURL = await uploadImageToStorage(currentUser.uid, selectedPfp, "profile");
+        }
+        if(selectedCp) {
+            cpUploadURL = await uploadImageToStorage(currentUser.uid, selectedCp, "cover");
+        }
+        if(selectedBgp) {
+            bgpUploadURL = await uploadImageToStorage(currentUser.uid, selectedBgp, "background");
+        }
+        
 
         let dataConstruct = {
             data: {
@@ -137,17 +189,19 @@ const Editor = (props) => {
                 name: name
             },
             images: {
-                background: bgpURL,
-                profile: pfpURL
+                cover: cpUploadURL ? cpUploadURL : cpURL,
+                profile: pfpUploadURL ? pfpUploadURL : pfpURL,
+                background: bgpUploadURL ? bgpUploadURL : bgpURL
             },
             socialsData: socials,
             websitesData: websites,
             options: {
-                // classic: classicMode,
-                // shadow: shadow,
                 align: pageAlign,
+                outline: outline,
+                card_opacity: cardOpacity,
+                card_blur: cardBlur,
                 colour_bg: colourBackground,
-                colour_container: colourContainer,
+                colour_card: colourCard,
                 colour_box: colourBox,
                 colour_text: colourText
             },
@@ -306,6 +360,8 @@ const Editor = (props) => {
             if(websites[index].url && websites[index].title) {
                 returnDisplayDataWebsite.push(
                     <WebsiteLink
+                        border={(outlineSlider === "right") ? outline : false}
+                        shadow={(outlineSlider === "centre")}
                         colour={colourBox}
                         key={index}
                         id={index}
@@ -331,6 +387,8 @@ const Editor = (props) => {
             // preview
             returnDisplayDataSocial.push(
                 <SocialLink
+                    border={(outlineSlider === "right") ? outline : false}
+                    shadow={(outlineSlider === "centre")}
                     key={index}
                     url={socials[index]} />
             )
@@ -341,7 +399,7 @@ const Editor = (props) => {
 
         setDisplayEditSocials(returnDataSocial);
         setDisplaySocials(returnDisplayDataSocial);
-    }, [websites, socials, colourBox, trigger]);
+    }, [websites, socials, colourBox, trigger, outline]);
     
 
     const [showActions, setShowActions] = useState(false);
@@ -393,23 +451,39 @@ const Editor = (props) => {
         }
     }
 
+    function handleSelectCp(e) {
+        setSelectedCp(e.target.files[0]);
+    }
+
+    const hexToBg = (hex, opacity) => {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return `rgba(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}, ${opacity}%`;
+    }
+
     return (
                 <div className='demo-container'>
 
                     <div className='mock-background'>
                         <div 
                           className={`profile-container-wrapper ${pageAlign}`} 
-                          style={{ backgroundColor: colourBackground }}>
+                          style={{ background: (bgpURL || selectedBgp) ? `center / cover no-repeat url("${selectedBgp ? URL.createObjectURL(selectedBgp) : bgpURL}")` : colourBackground }}>
                             <div 
-                              className={`profile-container ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}
+                              className={`profile-container ${((cpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !cpURL) ? 'pf-alone' : '') || ((!pfpURL && !cpURL) ? 'none' : '')}`}
                               style={{
-                                background: bgpURL ? colourContainer : 'transparent',
-                                color: colourText
+                                color: colourText,
+                                background: cpURL ? `${hexToBg(colourCard, cardOpacity)}` : 'transparent',
+                                backdropFilter: cpURL ? `blur(${cardBlur}px)` : '',
+                                boxShadow: (cpURL || selectedCp) ? (outlineSlider === "centre") ? '0 0 10px rgba(0,0,0,0.03)' : 'none' : 'none',
+                                border: (cpURL || selectedCp) ? (outlineSlider === "right") ? `1px solid ${outline}` : 'none' : 'none'
                               }}>
                                 <div className='profile'>
                                     <div className='photos'>
-                                        <img className='bgp' src={bgpURL} alt="background" />
-                                        <img className='pfp' src={pfpURL} alt="profile" />
+                                        <img className='bgp' src={selectedCp ? URL.createObjectURL(selectedCp) : cpURL} alt="background" />
+                                        <img 
+                                          style={{
+                                            boxShadow: (outlineSlider === "centre") ? '0 0 10px rgba(0,0,0,0.03)' : 'none',
+                                            border: (outlineSlider === "right") ? `1px solid ${outline}` : 'none'
+                                          }} className='pfp' src={selectedPfp ? URL.createObjectURL(selectedPfp) : pfpURL} alt="profile" />
                                     </div>
                                     <div className='info'>
                                         <h3>{name}</h3>
@@ -449,14 +523,14 @@ const Editor = (props) => {
                             <div className={`more-actions ${showActions}`}>
                                 <div className='delete-tray'>
                                     <div className='delete-container'>
-                                        <button disabled={loading} className={`button red deletepage dp${confirming}`} onClick={(confirming) ? hideDeleteConfirm : showDeleteConfirm}>
-                                            {(confirming) ? 'No! Cancel!' : 'Delete Page'}
-                                        </button>
                                         {(displayConfirm) && (
                                             <button disabled={loading} className='page-delete-confirm' onClick={handleDeletePage}>
                                                 Confirm, Delete!
                                             </button>
                                         )}
+                                        <button disabled={loading} className={`button red deletepage dp${confirming}`} onClick={(confirming) ? hideDeleteConfirm : showDeleteConfirm}>
+                                            {(confirming) ? 'No! Cancel!' : 'Delete Page'}
+                                        </button>
                                         {(pageDeleteError) && (
                                             <div className='page-delete-error'>
                                                 {pageDeleteError}
@@ -468,14 +542,55 @@ const Editor = (props) => {
                         </div>
 
                         <div className='input-section'>
-                            <div className='input-row'>
-                                <div className='input-box'>
-                                    <h4>Background Photo</h4>
-                                    <input type="text" value={bgpURL} onChange={e=>updateBgpURL(e.target.value)} />
+                            <div className='image-row'>
+                                <h4>Background Photo</h4>
+                                <div className="current-image">
+                                    {bgpURL ? (
+                                        <>
+                                            <div className="dl-link">
+                                                {bgpURL}
+                                            </div>
+                                            <div className='more' onClick={()=>updateBgpURL("")}>
+                                                <DeleteIcon />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <input type="file" name="file" onChange={e=>setSelectedBgp(e.target.files[0])} />
+                                    )}
                                 </div>
-                                <div className='input-box'>
-                                    <h4>Profile Photo</h4>
-                                    <input type="text" value={pfpURL} onChange={e=>updatePfpURL(e.target.value)} />
+                            </div>
+                            <div className='image-row'>
+                                <h4>Cover Photo</h4>
+                                <div className="current-image">
+                                    {cpURL ? (
+                                        <>
+                                            <div className="dl-link">
+                                                {cpURL}
+                                            </div>
+                                            <div className='more' onClick={()=>updateCpURL("")}>
+                                                <DeleteIcon />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <input type="file" name="file" onChange={handleSelectCp} />
+                                    )}
+                                </div>
+                            </div>
+                            <div className="image-row">
+                                <h4>Profile Photo</h4>
+                                <div className="current-image">
+                                    {pfpURL ? (
+                                        <>
+                                            <div className="dl-link">
+                                                {pfpURL}
+                                            </div>
+                                            <div className='more' onClick={()=>updatePfpURL("")}>
+                                                <DeleteIcon />
+                                            </div>
+                                        </>
+                                    ) : (
+                                        <input type="file" name="file" onChange={e=>setSelectedPfp(e.target.files[0])} />
+                                    )}
                                 </div>
                             </div>
                             <div className='input-row'>
@@ -496,8 +611,11 @@ const Editor = (props) => {
                             </p>
                             <div className='input-box social'>
                                 {displayEditSocials}
-                                <div onClick={addSocial}>
-                                    Add Social Link
+                                <div className="add-item" onClick={addSocial}>
+                                    <PlusIcon />
+                                    <div style={{marginTop:-3}}>
+                                        social
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -505,47 +623,100 @@ const Editor = (props) => {
                             <h4>Websites</h4>
                             <div className='input-box websites'>
                                 {displayEditWebsites ? displayEditWebsites : displayEditWebsites}
-                                <div onClick={addWebsite}>
-                                    Add Website
+                                <div className="add-item" onClick={addWebsite}>
+                                    <PlusIcon />
+                                    <div style={{marginTop:-3}}>
+                                        website
+                                    </div>
                                 </div>
                             </div>
                         </div>
                         <div className='input-section options'>
                             <h4>Options</h4>
-                            {/* 
-                            <h5>Classic Mode</h5>
-                            <div className={`toggle-container ${classicMode}`} onClick={e=>setClassicMode(classicMode ? false : true)}>
-                                <div className='toggle-nob'></div>
+                            <div className="option">
+                                <p>Alignment</p>
+                                <div className="slider-container">
+                                    <div className="slider">
+                                        <div className={`slide-item ${(pageAlign === "left") ? "me" : ""}`} onClick={()=>setPageAlign("left")}>
+                                            Left
+                                        </div>
+                                        <div className={`slide-item ${(pageAlign === "centre") ? "me" : ""}`} onClick={()=>setPageAlign("centre")}>
+                                            Centre
+                                        </div>
+                                        <div className={`slide-item ${(pageAlign === "right") ? "me" : ""}`} onClick={()=>setPageAlign("right")}>
+                                            Right
+                                        </div>
+                                    </div>
+                                    <div className={`slider-faux ${pageAlign}`}>
+                                        <div className="slide-slider">&nbsp;</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="option">
+                                <p>Outline</p>
+                                <div className="slider-container">
+                                    <div className="slider">
+                                        <div className={`slide-item ${(outlineSlider === "left") ? "me" : ""}`} onClick={()=>{setOutlineSlider("left"); setOutline('')}}>
+                                            None
+                                        </div>
+                                        <div className={`slide-item ${(outlineSlider === "centre") ? "me" : ""}`} onClick={()=>{setOutlineSlider("centre"); setOutline('shadow')}}>
+                                            Shadow
+                                        </div>
+                                        <div className={`slide-item ${(outlineSlider === "right") ? "me" : ""}`} onClick={()=>{setOutlineSlider("right"); setOutline('#000000')}}>
+                                            Border
+                                        </div>
+                                    </div>
+                                    <div className={`slider-faux ${outlineSlider}`}>
+                                        <div className="slide-slider">&nbsp;</div>
+                                    </div>
+                                </div>
+                                <div className={`option-colour outline ${outlineSlider === "right"}`}>
+                                    <input type="color" id="background" name="background" value={outline} onChange={e=>setOutline(e.target.value)} />
+                                    {outline}
+                                </div>
                             </div>
 
-                            <h5>Drop Shadow</h5>
-                            <div className={`toggle-container ${shadow}`} onClick={e=>setShadow(shadow ? false : true)}>
-                                <div className='toggle-nob'></div>
+                            {(cpURL || selectedCp) && (
+                                <>
+                                    <div className="option">
+                                        <p>Card Opacity</p>
+                                        <input type="range" min="1" max="100" value={cardOpacity} className="slider" onChange={e=>setCardOpacity(e.target.value)} />
+                                    </div>
+                                    <div className="option">
+                                        <p>Card Blur</p>
+                                        <input type="range" min="1" max="100" value={cardBlur} className="slider" onChange={e=>setCardBlur(e.target.value)} />
+                                    </div>
+                                    <div className="option">
+                                        <p>Card Colour</p>
+                                        <div className="option-colour">
+                                            <input type="color" id="secondary" name="secondary" value={colourCard} onChange={e=>setColourCard(e.target.value)} />
+                                            {colourCard}
+                                        </div>
+                                    </div>
+                                </>
+                            )}
+                            <div className="option">
+                                <p>Background Colour</p>
+                                <div className="option-colour">
+                                    <input type="color" id="background" name="background" value={colourBackground} onChange={e=>setColourBackground(e.target.value)} />
+                                    {colourBackground}
+                                </div>
                             </div>
-                             */}
-
-                            <h5>Alignment</h5>
-                            <div style={{display:"flex", justifyContent:"space-between"}}>
-                                <div onClick={()=>setPageAlign("left")} style={{cursor:"pointer", fontWeight: (pageAlign === "left") ? "bold" : "normal"}}>Left</div>
-                                <div onClick={()=>setPageAlign("centre")} style={{cursor:"pointer", fontWeight: (pageAlign === "centre") ? "bold" : "normal"}}>Centre</div>
-                                <div onClick={()=>setPageAlign("right")} style={{cursor:"pointer", fontWeight: (pageAlign === "right") ? "bold" : "normal"}}>Right</div>
+                            <div className="option">
+                                <p>Box Colour</p>
+                                <div className="option-colour">
+                                    <input type="color" id="primary" name="primary" value={colourBox} onChange={e=>setColourBox(e.target.value)} />
+                                    {colourBox}
+                                </div>
+                            </div>
+                            <div className="option">
+                                <p>Text Colour</p>
+                                <div className="option-colour">
+                                    <input type="color" id="secondary" name="secondary" value={colourText} onChange={e=>setColourText(e.target.value)} />
+                                    {colourText}
+                                </div>
                             </div>
 
-                            <h5>Background Colour</h5>
-                            <input type="color" id="background" name="background" value={colourBackground} onChange={e=>setColourBackground(e.target.value)} />
-                            {colourBackground}
-
-                            <h5>Container Colour</h5>
-                            <input type="color" id="secondary" name="secondary" value={colourContainer} onChange={e=>setColourContainer(e.target.value)} />
-                            {colourContainer}
-                            
-                            <h5>Box Colour</h5>
-                            <input type="color" id="primary" name="primary" value={colourBox} onChange={e=>setColourBox(e.target.value)} />
-                            {colourBox}
-
-                            <h5>Text Colour</h5>
-                            <input type="color" id="secondary" name="secondary" value={colourText} onChange={e=>setColourText(e.target.value)} />
-                            {colourText}
                         </div>
                         {(unsavedChangesInfo || seeChanged()) && (
                             <div className='save-change'>

@@ -13,6 +13,7 @@ import LinkedinIcon from '../icons/linkedin.svg';
 import TrelloIcon from '../icons/trello.svg';
 import YoutubeIcon from '../icons/youtube.svg';
 import MediumIcon from '../icons/medium.svg';
+import SpotifyIcon from '../icons/spotify.svg';
 
 const SocialLink = (props) => {
     
@@ -44,6 +45,8 @@ const SocialLink = (props) => {
                 return "youtube"
             } else if (link.indexOf('medium') > -1) {
                 return "medium"
+            } else if (link.indexOf('spotify') > -1) {
+                return "spotify"
             } else {
                 return "default"
             }
@@ -78,6 +81,8 @@ const SocialLink = (props) => {
                 return YoutubeIcon;
             case 'medium':
                 return MediumIcon;
+            case 'spotify':
+                return SpotifyIcon;
             default:
                 break;
         }
@@ -88,7 +93,11 @@ const SocialLink = (props) => {
         target="_blank" 
         rel="noreferrer" 
         href={`${props.url}`} 
-        className={`icon ${returnSocialType(props.url)}`} >
+        className={`icon ${returnSocialType(props.url)}`}
+        style={{
+            boxShadow: props.shadow ? '0 0 10px rgba(0,0,0,0.05)' : 'none',
+            border: props.border ? `1px solid ${props.border}` : 'none'
+        }} >
             <img src={returnSocialIcon(returnSocialType(props.url))} alt={returnSocialType(props.url)} />
         </a>
     );

@@ -13,19 +13,21 @@ export default function Profile() {
 
     const [name, setName] = useState('');
     const [bio, setBio] = useState('');
-    const [uid, setUid] = useState('');
 
     const [websites, setWebsites] = useState([]); // {img: 'img url', name: 'link name', link: '',}
     const [socials, setSocials] = useState([]);
 
     // TODO: Add support for profile pictures (at EDITOR side)
     const [pfpURL, setPfpURL] = useState('');
+    const [cpURL, setCpURL] = useState(''); 
     const [bgpURL, setBgpURL] = useState('');
 
     // OPTIONS baby
     const [pageAlign, setPageAlign] = useState('');
+    const [cardOpacity, setCardOpacity] = useState(0);
+    const [cardBlur, setCardBlur] = useState(0);
     const [colourBackground, setColourBackground] = useState('#FFFFFF');
-    const [colourContainer, setColourContainer] = useState('#FFFFFF');
+    const [colourCard, setColourCard] = useState('#FFFFFF');
     const [colourBox, setColourBox] = useState('#FFFFFF');
     const [colourText, setColourText] = useState('#000000');
 
@@ -39,8 +41,6 @@ export default function Profile() {
             if (!doc.exists) {
                 console.log("Page doesn't exist G");
             } else if (doc.exists) {
-                setUid(profileData.user_id ? profileData.user_id : '');
-
                 setName(profileData.data.name ? profileData.data.name : '');
                 setBio(profileData.data.biography ? profileData.data.biography : '');
 
@@ -48,11 +48,14 @@ export default function Profile() {
                 setWebsites(profileData.websitesData ? profileData.websitesData : {});
 
                 setPfpURL(profileData.images.profile ? profileData.images.profile : '');
+                setCpURL(profileData.images.cover ? profileData.images.cover : '');
                 setBgpURL(profileData.images.background ? profileData.images.background : '');
-
+                
                 setPageAlign(profileData.options.align ? profileData.options.align : '')
                 setColourBackground(profileData.options.colour_bg ? profileData.options.colour_bg : '')
-                setColourContainer(profileData.options.colour_container ? profileData.options.colour_container : '')
+                setCardOpacity(profileData.options.card_opacity ? profileData.options.card_opacity : '')
+                setCardBlur(profileData.options.card_blur ? profileData.options.card_blur : '')
+                setColourCard(profileData.options.colour_card ? profileData.options.colour_card : '')
                 setColourBox(profileData.options.colour_box ? profileData.options.colour_box : '')
                 setColourText(profileData.options.colour_text ? profileData.options.colour_text : '')
             } else {
@@ -99,22 +102,27 @@ export default function Profile() {
         return returnData;
     }
 
+    const hexToBg = (hex, opacity) => {
+        var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return `rgba(${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(result[3], 16)}, ${opacity}%`;
+    }
 
     // TODO: Check if user is signed in; if signed in, check if UID matches UID of doc, if does, show option to edit 
 
     return (
         <div 
           className={`profile-container-wrapper ${pageAlign} prod`} 
-          style={{ backgroundColor: colourBackground }}>
+          style={{ background: bgpURL ? `center / cover no-repeat url("${bgpURL}")` : colourBackground }}>
             <div 
-              className={`profile-container ${((bgpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !bgpURL) ? 'pf-alone' : '') || ((!pfpURL && !bgpURL) ? 'none' : '')}`}
+              className={`profile-container ${((cpURL && !pfpURL) ? 'bg-alone' : '') || ((pfpURL && !cpURL) ? 'pf-alone' : '') || ((!pfpURL && !cpURL) ? 'none' : '')}`}
               style={{
-                background: bgpURL ? colourContainer : 'transparent',
-                color: colourText
+                color: colourText,
+                background: cpURL ? `${hexToBg(colourCard, cardOpacity)}` : 'transparent',
+                backdropFilter: cpURL ? `blur(${cardBlur}px)` : ''
               }}>
                 <div className='profile'>
                     <div className='photos'>
-                        <img className='bgp' src={bgpURL} alt="background" />
+                        <img className='bgp' src={cpURL} alt="cover" />
                         <img className='pfp' src={pfpURL} alt="profile" />
                     </div>
                     <div className='info'>
