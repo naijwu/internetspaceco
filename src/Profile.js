@@ -24,6 +24,7 @@ export default function Profile() {
 
     // OPTIONS baby
     const [pageAlign, setPageAlign] = useState('');
+    const [outline, setOutline] = useState('');
     const [cardOpacity, setCardOpacity] = useState(0);
     const [cardBlur, setCardBlur] = useState(0);
     const [colourBackground, setColourBackground] = useState('#FFFFFF');
@@ -52,6 +53,7 @@ export default function Profile() {
                 setBgpURL(profileData.images.background ? profileData.images.background : '');
                 
                 setPageAlign(profileData.options.align ? profileData.options.align : '')
+                setOutline(profileData.options.outline ? profileData.options.outline : '')
                 setColourBackground(profileData.options.colour_bg ? profileData.options.colour_bg : '')
                 setCardOpacity(profileData.options.card_opacity ? profileData.options.card_opacity : '')
                 setCardBlur(profileData.options.card_blur ? profileData.options.card_blur : '')
@@ -74,6 +76,8 @@ export default function Profile() {
         for (let item in socials) {
             returnData.push(
                 <SocialLink
+                    border={(!(outline === "") && (!(outline === "shadow"))) ? outline : false}
+                    shadow={(outline === "shadow")}
                     key={item}
                     url={socials[item]} />
             )
@@ -89,6 +93,8 @@ export default function Profile() {
             if(websites[item].url && websites[item].title) {
                 returnData.push(
                     <WebsiteLink
+                        border={(!(outline === "") && (!(outline === "shadow"))) ? outline : false}
+                        shadow={(outline === "shadow")}
                         colour={colourBox}
                         key={item}
                         id={item}
@@ -118,12 +124,17 @@ export default function Profile() {
               style={{
                 color: colourText,
                 background: cpURL ? `${hexToBg(colourCard, cardOpacity)}` : 'transparent',
-                backdropFilter: cpURL ? `blur(${cardBlur}px)` : ''
+                backdropFilter: cpURL ? `blur(${cardBlur}px)` : '',
+                boxShadow: cpURL? (outline === "shadow") ? '0 0 10px rgba(0,0,0,0.03)' : 'none' : 'none',
+                border: cpURL ? (!(outline === "") && (!(outline === "shadow"))) ? `1px solid ${outline}` : 'none' : 'none'
               }}>
                 <div className='profile'>
                     <div className='photos'>
                         <img className='bgp' src={cpURL} alt="cover" />
-                        <img className='pfp' src={pfpURL} alt="profile" />
+                        <img style={{
+                            boxShadow: (outline === "shadow") ? '0 0 10px rgba(0,0,0,0.03)' : 'none',
+                            border: (!(outline === "") && (!(outline === "shadow"))) ? `1px solid ${outline}` : 'none'
+                        }} className='pfp' src={pfpURL} alt="profile" />
                     </div>
                     <div className='info'>
                         <h3>{name}</h3>

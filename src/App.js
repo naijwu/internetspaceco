@@ -22,7 +22,7 @@ function AuthRoute({ component: Component, ...rest }) {
         currentUser ? ( 
           <Component {...props} />
         ) : ( 
-          <Redirect to='/app/login' />
+          <Redirect to='/' />
         )
       }
     />

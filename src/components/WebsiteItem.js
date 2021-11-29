@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 // repetitive code ewwww
 const DeleteIcon = () => (
@@ -15,21 +15,26 @@ const DownIcon = () => (
 
 const WebsiteItem = (props) => {
 
-    const [title, setTitle] = useState(props.title(props.id));
-    const [url, setUrl] = useState(props.url(props.id));
+    const [title, setTitle] = useState(props.title);
+    const [url, setUrl] = useState(props.url);
+
+    useEffect(() => {
+        setTitle(props.title);
+        setUrl(props.url);
+    }, [props])
 
     const updateTitle = (e) => {
         props.setTitle(e.target.value, props.id);
-        setTitle(props.title(props.id));
+        setTitle(e.target.value, props.id);
     }
     
     const updateUrl = (e) => {
         props.setUrl(e.target.value, props.id);
-        setUrl(props.url(props.id));
+        setUrl(e.target.value, props.id);
     }
 
     return (
-        <div className='input-row' onClick={()=>console.log(props.id)}>
+        <div className='input-row'>
             <div className='website-name'>
                 <input type="text" value={title} onChange={e=>updateTitle(e)} placeholder="Title" />
             </div>

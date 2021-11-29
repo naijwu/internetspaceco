@@ -14,6 +14,8 @@ import TrelloIcon from '../icons/trello.svg';
 import YoutubeIcon from '../icons/youtube.svg';
 import MediumIcon from '../icons/medium.svg';
 import SpotifyIcon from '../icons/spotify.svg';
+import VscoIcon from '../icons/vsco.svg';
+import SnapchatIcon from '../icons/snapchat.svg';
 
 const SocialLink = (props) => {
     
@@ -47,6 +49,10 @@ const SocialLink = (props) => {
                 return "medium"
             } else if (link.indexOf('spotify') > -1) {
                 return "spotify"
+            } else if (link.indexOf('vsco') > -1) {
+                return "vsco"
+            } else if (link.indexOf('snapchat') > -1) {
+                return "snapchat"
             } else {
                 return "default"
             }
@@ -83,6 +89,10 @@ const SocialLink = (props) => {
                 return MediumIcon;
             case 'spotify':
                 return SpotifyIcon;
+            case 'vsco':
+                return VscoIcon;
+            case 'snapchat':
+                return SnapchatIcon;
             default:
                 break;
         }

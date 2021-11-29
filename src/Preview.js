@@ -48,13 +48,28 @@ export default function Preview() {
                 if(docData.pages[0]) {
                     // if there exists -- DASHBOARD
 
-                    setNeedSetup(false);
-
                     database.collection('pages').doc(`${docData.pages[0]}`).get().then((pageDoc) => {
-                        let page = pageDoc.data();
 
-                        setPageData(page);
-                        setPageDataLoaded(true);
+                        if(!pageDoc.exists) {
+
+                            // at this point, there exists a page array for user, 
+                            // but the doc the page array[0] refers to doesn't exist: delete and try again
+
+                            database.collection("users").doc(currentUser.uid).set({
+                                pages: [],
+                            }).then(function() {
+                                history.go(0);
+                            })
+
+                        } else if (doc.exists) {
+
+                            setNeedSetup(false);
+
+                            let page = pageDoc.data();
+
+                            setPageData(page);
+                            setPageDataLoaded(true);
+                        }
 
                     }).catch(function(err) {
                         console.log("Error reading the user's document:", err);
@@ -99,15 +114,30 @@ export default function Preview() {
                         let dataConstruct = {
                             user_id: currentUser.uid,
                             data: {
-                                biography: '',
-                                name: ''
+                                biography: 'this is your own internet space',
+                                name: 'welcome 🙋‍♂️'
                             },
                             images: {
                                 background: '',
-                                profile: ''
+                                profile: '',
+                                cover: '',
                             },
-                            socialsData: {},
-                            websitesData: {}
+                            options: {
+                                align: "left",
+                                outline: "shadow",
+                                colour_bg: "#F1F6FE",
+                                colour_card: "#FFFFFF",
+                                colour_box: "#FFFFFF",
+                                colour_text: "#1A73E8"
+                            },
+                            socialsData: ["https://instagram.com", "https://github.com"],
+                            websitesData: [{
+                                title: "add a website",
+                                url: "https://internetspace.co"
+                            }, {
+                                title: "and then another one",
+                                url: "https://internetspace.co"
+                            }]
                         };
     
                         database.collection("pages").doc(cleanedNewPageName).set(dataConstruct)
