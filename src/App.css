@@ -1170,12 +1170,19 @@ a.profile-footer-link {
     width:100%;
     padding:0;
     max-height:none;
+    min-height:0;
   }
 
   .profile-container-wrapper {
     height:auto;
     max-height:none;
+    min-height:0;
     border-radius:0 0 20px 20px;
+  }
+  
+  .prod {
+    height:100vh;
+    border-radius:0;
   }
 
   .sidebar {
