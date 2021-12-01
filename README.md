@@ -18,4 +18,4 @@ my bud kyu, internetspace.co's superfan :')
 ![internetspaceco-v2](https://user-images.githubusercontent.com/26179641/143826258-85aca1dd-c75e-4502-89df-d1af1b549504.png)
 
 
-[^1]: Always worked on whenever I have big exams coming up LMAO
+[^1]: Always worked on whenever I have big important exams coming up LMAO
